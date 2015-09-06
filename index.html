@@ -1,188 +1,250 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport"></meta>
-<title>Milk.Findme - Google Fusion Tables</title>
-<style type="text/css">
-html, body, #googft-mapCanvas {
-  height: 450px;
-  margin: 15px;
-  padding: 0px;
-  width: 750px;
-}
-</style>
+<html lang='en'>
+  <head>
+    <title>FindProduct</title>
+    <meta charset='utf-8' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta content='' name='description' />
+    <meta content='' name='author' />
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/custom.css"/>
+	<style>
+    	th, td {
+        padding: 2px;
+        }
+	</style>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script type="text/javascript" src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 
-<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&amp;v=3"></script>
+	
+      
+
+    <![endif]-->
+  </head>
+  <body>
+    <div class='navbar navbar-default navbar-static-top'>
+      <div class='container-fluid'>
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+           <!--  <span class="icon-bar"></span -->
+           <!-- <span class="icon-bar"></span> -->
+           <!-- <span class="icon-bar"></span> -->
+          </button>
+          <a class='navbar-brand' href='index.html'>Find Products Near You</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class='active'><a href="index.html">Map</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class='container-fluid'>
+      <div class='row'>
+        <div class='col-md-4'>
+          <div class='well'>
+			<div class="input-group" id='search_address_group'>
+              <input class='form-control' id='search_address' placeholder='Enter an address or an intersection' type='text' />
+			  <span class="input-group-btn">
+                <a class='btn btn-default' id='find_me' href='#'>
+                  <i class='glyphicon glyphicon-screenshot'></i>
+                </a>
+              </span>
+			  </div>
+              <p>
+			  </p>
+            <div class="input-group" id='text_search_group'>
+			<input class='form-control' id='text_search' placeholder='Find Products Near You' type='text' />
+			<span class="input-group-btn">
+			<a class='btn btn-default' id='search' href='#'>
+                <i class='glyphicon glyphicon-search'></i>
+              </a>
+			  
+			  <a class='btn btn-default' id='reset' href='#'>
+                <i class='glyphicon glyphicon-repeat'></i>
+              </a>
+			  </span>
+			  </div>
+            
+            <div class='alert alert-info' id='result_box' ><a href="javascript:SwapDivsWithClick('results_list')"><strong id='result_count'></strong></a></div>
+			<div id='results_list'></div>
+          </div>
+          
+        </div>
+        <div class='col-md-8'>
+          <noscript>
+            <div class='alert alert-info'>
+              <h4>Your JavaScript is disabled</h4>
+              <p>Please enable JavaScript to view the map.</p>
+            </div>
+          </noscript>
+          <div id='map_canvas'></div>
+          <p class='pull-right'>
+            
+        </p>
+        </div>
+      </div>
+    </div>
+
+
 
 <script type="text/javascript">
-//google.load('visualization', '1');
+function SwapDivsWithClick(div)
+{
+   d = document.getElementById(div);
 
-  function handleNoGeolocation(errorFlag) {
-  if (errorFlag) {
-    var content = 'Error: The Geolocation service failed.';
-  } else {
-    var content = 'Error: Your browser doesn\'t support geolocation.';
+   if( d.style.display == "none" )
+   {
+      d.style.display = "block";
+   }
+   else
+   {
+      d.style.display = "none";
+   }
+}
+</script>
+
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/base/jquery-ui.css" type="text/css" />
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"> </script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"> </script>
+	<script async src="https://code.jquery.com/ui/1.10.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery.address.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places"></script>
+    <script type="text/javascript" src="js/maps_lib.js"></script>
+<script>
+var markers = [];
+window.markers = markers;
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
   }
-
-  var options = {
-    map: map,
-    position: new google.maps.LatLng(60, 105),
-    content: content
-  };
-
-  var infowindow = new google.maps.InfoWindow(options);
-  map.setCenter(options.position);
 }
 
-  function initialize() {
-    google.maps.visualRefresh = true;
-    var isMobile = (navigator.userAgent.toLowerCase().indexOf('android') > -1) ||
-      (navigator.userAgent.match(/(iPod|iPhone|iPad|BlackBerry|Windows Phone|iemobile)/));
-    if (isMobile) {
-      var viewport = document.querySelector("meta[name=viewport]");
-      viewport.setAttribute('content', 'initial-scale=1.0, user-scalable=no');
-    }
-    var mapDiv = document.getElementById('googft-mapCanvas');
-    mapDiv.style.width = isMobile ? '100%' : '600px';
-    mapDiv.style.height = isMobile ? '100%' : '360px';
-    var map = new google.maps.Map(mapDiv, {
-      center: new google.maps.LatLng(37.23571221595085, -122.02900131296383),
-      zoom: 12,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    });
-    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(document.getElementById('googft-legend-open'));
-    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(document.getElementById('googft-legend'));
-	var curpos = new google.maps.LatLng(0,0)
-	// Try HTML5 geolocation
-  if(navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      var pos = new google.maps.LatLng(position.coords.latitude,
-                                       position.coords.longitude);
-	  curpos = pos;
-	  var marker = new google.maps.Marker({
-    // The below line is equivalent to writing:
-    // position: new google.maps.LatLng(-34.397, 150.644)
-    position: pos,
-    map: map
-      });
-
-      var infowindow = new google.maps.InfoWindow({
-        map: map,
-        position: pos,
-        content: ''
-      });
-
-      map.setCenter(pos);
-    }, function() {
-      handleNoGeolocation(true);
-    });
-  } else {
-    // Browser doesn't support Geolocation
-    handleNoGeolocation(false);
+// Removes the markers from the map, but keeps them in the array.
+function clearMarkers() {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].infoWindow = null;
   }
-var tableId = '1O6tQoCnle-2SrXQwRFUXoMQBmcRKroipZOCmDpjx';
-var locationColumn = 'Location';
-    layer = new google.maps.FusionTablesLayer({
-      map: map,
-      heatmap: { enabled: false },
-      query: {
-        select: locationColumn,
-        from: tableId,
-      },
-      options: {
-        styleId: 2,
-        templateId: 2
-      }
-    });
-	//initAutoComplete(tableId);
-	 //google.maps.event.addDomListener(document.getElementById('go'), 'click',
-            //function() {
-	google.maps.event.addDomListener(document.getElementById('product'), 'keydown',
-            function(e) {
-              var product = document.getElementById('product').value;
-			  if (e.keyCode != 13) {
-				return
-			  }
+  setMapOnAll(null);
+}
 
-              if (product) {
-                product = product.replace(/'/g, '\\\'');
-                var where = "'Product' CONTAINS IGNORING CASE '" +
-                    product + "'";
+// Shows any markers currently in the array.
+function showMarkers() {
+  setMapOnAll(map);
+}
 
-                layer.setOptions({
-                  query: {
-                    select: locationColumn,
-                    from: tableId,
-                    where: where,
-					//orderBy: 'ST_DISTANCE(locationColumn, curpos)',
-                    limit: 10
-                  }
-                });
+// Deletes all markers in the array by removing references to them.
+function deleteMarkers() {
+  clearMarkers();
+  markers = [];
+}
+function centerOn(loc, store, product, price) {
+    deleteMarkers();
+	var map = window.map;
+	var geocoder = new google.maps.Geocoder();
+	geocodeAddress(geocoder, map, loc, store, product, price);
+}
+
+function geocodeAddress(geocoder, map, address, store, product, price) {
+  geocoder.geocode({address: address}, function(results, status) {
+    if (status === google.maps.GeocoderStatus.OK) {
+	  var infoWindow = new google.maps.InfoWindow();
+      map.setCenter(results[0].geometry.location);
+      var marker = new google.maps.Marker({
+        map: map,
+        position: results[0].geometry.location
+      });
+	  //google.maps.event.addListener(marker, 'click', function(event) {
+            infoWindow.setPosition(results[0].geometry.location);
+            infoWindow.setContent('<b><a href=\"http://maps.google.com?q=' + address + '\">'+ store + '</a><br></b>' + product + '<br>' + price);
+            infoWindow.open(map, marker);
+			setTimeout(function () { infoWindow.close(); }, 20000);
+        //  });
+	  markers.push(marker);
+	  
+    } else {
+      alert('Geocode was not successful for the following reason: ' + status);
+    }
+  });
+}
+
+
+</script>
+
+
+	
+    <script type='text/javascript'>
+	    google.load('visualization', '1');
+      //<![CDATA[
+        $(window).resize(function () {
+          var h = $(window).height(),
+            offsetTop = 105; // Calculate the top offset
+        
+          $('#map_canvas').css('height', (h - offsetTop));
+        }).resize();
+        
+        $(function() {
+          var myMap = new MapsLib({
+            fusionTableId:      "1O6tQoCnle-2SrXQwRFUXoMQBmcRKroipZOCmDpjx",
+			//"1m4Ez9xyTGfY2CU6O-UgEcPzlS0rnzLU93e4Faa0",
+            googleApiKey:       "AIzaSyAME1K5S2fqX8_Sjk6HsREPMCucUzeejy8",
+			//"AIzaSyCFaB9oZ9ZNM9i99yUyOsaxcoBpYS_UqHo",//
+			//"AIzaSyAyLaLgGUf3v6zduHNZ-4mGcg3d_Ix9rO0",//with url access 
+			//"AIzaSyA3FQFrNr5W2OEVmuENqhb2MBB2JabdaOY",
+            locationColumn:     "Location",
+			map_center: [37.23571221595085, -122.02900131296383],
+            //map_center:         [41.8781136, -87.66677856445312],
+            locationScope:      "san jose"
+          });
+
+          var autocomplete = new google.maps.places.Autocomplete(document.getElementById('search_address'));
+		 
+
+          
+          $('#search_radius').change(function(){
+            myMap.doSearch();
+          });
+          
+          $('#search').click(function(){
+            myMap.doSearch();
+          });
+		  //$('#text_search').on('click, keyup, blur, change', function () {
+            //myMap.doSearch();
+          //});
+		  //$("#text_search").keydown(function(e){
+              //var key =  e.keyCode ? e.keyCode : e.which;
+              //if(key === 13) {
+                  //myMap.doSearch()
+              //}
+          //});
+          
+          $('#find_me').click(function(){
+            myMap.findMe(); 
+            return false;
+          });
+
+
+          $('#reset').click(function(){
+            myMap.reset(); 
+            return false;
+          });
+          
+          $(":text").keydown(function(e){
+              var key =  e.keyCode ? e.keyCode : e.which;
+              if(key === 13) {
+                  $('#search').click();
+                  return false;
               }
-        });
-	function initAutoComplete(tableId) {
-        // Retrieve the unique product names using GROUP BY workaround.
-        var queryText = encodeURIComponent(
-            "SELECT 'Product', COUNT() " +
-            'FROM ' + tableId + " GROUP BY 'Product'");
-        var query = new google.visualization.Query(
-            'http://www.google.com/fusiontables/gvizdata?tq='  + queryText);
-
-        query.send(function(response) {
-          var numRows = response.getDataTable().getNumberOfRows();
-
-          // Create the list of results for display of autocomplete.
-          var results = [];
-          for (var i = 0; i < numRows; i++) {
-            results.push(response.getDataTable().getValue(i, 0));
-          }
-
-          // Use the results to create the autocomplete options.
-          $('#product').autocomplete({
-            source: results,
-            minLength: 2
           });
         });
-      }
-	 
-	  
-
-    if (isMobile) {
-      var legend = document.getElementById('googft-legend');
-      var legendOpenButton = document.getElementById('googft-legend-open');
-      var legendCloseButton = document.getElementById('googft-legend-close');
-      legend.style.display = 'none';
-      legendOpenButton.style.display = 'block';
-      legendCloseButton.style.display = 'block';
-      legendOpenButton.onclick = function() {
-        legend.style.display = 'block';
-        legendOpenButton.style.display = 'none';
-      }
-      legendCloseButton.onclick = function() {
-        legend.style.display = 'none';
-        legendOpenButton.style.display = 'block';
-      }
-    }
-  }
-
-  google.maps.event.addDomListener(window, 'load', initialize);
-  
-  
-</script>
-</head>
-<body>
-<center>
-<body style="background-color:gray">
-<h1>Findme!</h1>
-<h5><small>Search products in stores</small></h5>
- <div><input type="text" id="product"></div>
-  <div id="googft-mapCanvas"></div>
- 
-	
-	<footer>
-<small> Contact: huzefa_mehta@yahoo.com reena_mehta@yahoo.com </small>
-</footer>
-
-	</center>
-</body>
+      //]]>
+    </script>
+  </body>
 </html>
