@@ -28,11 +28,11 @@
       <div class='container-fluid'>
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-           <!--  <span class="icon-bar"></span -->
-           <!-- <span class="icon-bar"></span> -->
-           <!-- <span class="icon-bar"></span> -->
+           <span class="icon-bar"></span>
+           <span class="icon-bar"></span>
+           <span class="icon-bar"></span>
           </button>
-          <a class='navbar-brand' href='index.html'>Find Products Near You</a>
+          <a class='navbar-brand' href='index.html'>FindProduct</a>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -63,9 +63,9 @@
                 <i class='glyphicon glyphicon-search'></i>
               </a>
 			  
-			  <a class='btn btn-default' id='reset' href='#'>
+			  <!-- <a class='btn btn-default' id='reset' href='#'>
                 <i class='glyphicon glyphicon-repeat'></i>
-              </a>
+              </a> -->
 			  </span>
 			  </div>
             
@@ -163,7 +163,7 @@ function geocodeAddress(geocoder, map, address, store, product, price) {
       });
 	  //google.maps.event.addListener(marker, 'click', function(event) {
             infoWindow.setPosition(results[0].geometry.location);
-            infoWindow.setContent('<b><a href=\"http://maps.google.com?q=' + address + '\">'+ store + '</a><br></b>' + product + '<br>' + price);
+            infoWindow.setContent('<b><a href=\"http://maps.google.com?q=' + address + '\", target=\"_blank\">'+ store + '<br><font size="1">(click for directions)</font></a><br></b>' + product + '<br>' + price);
             infoWindow.open(map, marker);
 			setTimeout(function () { infoWindow.close(); }, 20000);
         //  });
@@ -215,15 +215,51 @@ function geocodeAddress(geocoder, map, address, store, product, price) {
           $('#search').click(function(){
             myMap.doSearch();
           });
-		  //$('#text_search').on('click, keyup, blur, change', function () {
-            //myMap.doSearch();
-          //});
-		  //$("#text_search").keydown(function(e){
-              //var key =  e.keyCode ? e.keyCode : e.which;
-              //if(key === 13) {
-                  //myMap.doSearch()
-              //}
-          //});
+		  var executed = false
+		  /*
+		  $('#text_search').on('blur, change', function () {
+		    if (executed == false) {
+			  executed = true;
+              myMap.doSearch();
+			  executed = false;
+			  }
+          });
+		  */
+		  function textChange() {
+		      clearTimeout(textChange.timeout);
+			  textChange.timeout = setTimeout(function() {
+			     myMap.doSearch();
+			  }, 2000)
+		  }
+		  
+		  $('#text_search').on('click, change', function () {
+              textChange();
+          });
+		  $('#text_search').on('blur, change', function () {
+              textChange();
+          });
+		  /*
+		  $('#text_search').on('change', function () {
+              textChange();
+          });
+		  */
+		  $('#text_search').on('autocompleteselect', function () {
+              textChange();
+          });
+		  $("#text_search").on('keydown', function(e){
+              var key =  e.keyCode ? e.keyCode : e.which;
+              if((key === 46)|| (key == 8)) {
+			     var text_search = $("#text_search").val().replace("'", "\\'");
+				 if (text_search.length == 1) {
+					myMap.clearSearchResultsOnly();
+			        myMap.displayModSearchCount(0);
+				} else {
+				    return;
+				 }
+              } else {
+				return;
+			  }
+          });
           
           $('#find_me').click(function(){
             myMap.findMe(); 
@@ -246,5 +282,10 @@ function geocodeAddress(geocoder, map, address, store, product, price) {
         });
       //]]>
     </script>
-  </body>
+  </body
+<footer>
+  Copyright © 2015 FindProduct. All Rights Reserved.<br>
+  <a href="mailto:info@findproduct.us">
+  info@findproduct.us</a>
+  </footer>
 </html>

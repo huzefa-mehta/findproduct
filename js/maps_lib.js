@@ -60,11 +60,17 @@
 		google.maps.event.addDomListener(window, 'resize', function () {
 			self.map.setCenter(self.map_centroid);
 		});
-		google.maps.event.addDomListener(window, 'zoom_changed', function () {
+		
+		google.maps.event.addDomListener(self.map, 'zoom_changed', function () {
+			//window.alert('zoom_changed')
+			window.setTimeout(function() {
 			self.setRadius(self.map);
 			self.drawSearchRadiusCircle(self.currentPinpoint);
 			self.doSearch();
+			}, 2000);
 		});
+		
+		
 		self.searchrecords = null;
 
 		//reset filters
@@ -83,6 +89,9 @@
 		self.initAutoComplete(self.fusionTableId);
 		self.findMe();
 		var searchInProgress = 0;
+		var prevText = '';
+		var prevAddress = '';
+		var debug = false;
 
 		//-----end of custom initializers-----
 
@@ -139,10 +148,20 @@
 			}
 
 			// Use the results to create the autocomplete options.
+			/*
+			function textChange2() {
+		      clearTimeout(textChange2.timeout);
+			  textChange2.timeout = setTimeout(function() {
+			     doSearch();
+			  }, 1000)
+		    }
+			*/
 			$('#text_search').autocomplete({
 				source : results,
 				minLength : 2,
-				//change: function() {}
+				//change: function(e, u) {
+					//textChange2();
+				//}
 			});
 			//$('#test_search').data("ui-autocomplete")._trigger("change");
 			//$( '#test_search').autocomplete({
@@ -198,6 +217,7 @@
 					$.address.parameter('address', encodeURIComponent(address));
 					$.address.parameter('radius', encodeURIComponent(self.searchRadius));
 					map.setCenter(self.currentPinpoint);
+					/*
 					// set zoom level based on search radius
 					if (self.searchRadius >= 1610000)
 						map.setZoom(4); // 1,000 miles
@@ -225,6 +245,7 @@
 						map.setZoom(16); // 1/4 mile
 					else
 						self.map.setZoom(17);
+					*/
 
 					if (self.addrMarkerImage != '') {
 						self.addrMarker = new google.maps.Marker({
@@ -250,16 +271,22 @@
 
 	MapsLib.prototype.doSearch = function () {
 		var self = this;
+		var text_search = $("#text_search").val().replace("'", "\\'");
+		if (text_search == '') {
+			self.clearSearchResultsOnly();
+			self.displayModSearchCount(0);
+			return;
+		}
 		if (self.searchInProgress == 1) {return;}
 		self.searchInProgress = 1;
-		self.clearSearch();
+		self.clearSearchResultsOnly();
 		var address = $("#search_address").val();
 		//self.searchRadius = $("#search_radius").val();
 		self.setRadius(self.map)
 		self.whereClause = self.locationColumn + " not equal to ''";
 
 		//-----custom filters-----
-		var text_search = $("#text_search").val().replace("'", "\\'");
+		
 		if (text_search != '')
 			self.whereClause += " AND 'Product' contains ignoring case '" + text_search + "'";
 		else
@@ -312,6 +339,8 @@
 
 	MapsLib.prototype.drawSearchRadiusCircle = function (point) {
 		var self = this;
+		return;
+		if (self.debug == false) {return;}
 		var circleOptions = {
 			strokeColor : "#4b58a6",
 			strokeOpacity : 0.3,
@@ -406,7 +435,6 @@
 	};
 	MapsLib.prototype.displayModSearchCount = function (numRows) {
 		var self = this;
-
 		var name = self.recordNamePlural;
 		if (numRows == 1) {
 			name = self.recordName;
@@ -436,7 +464,6 @@
 
 	MapsLib.prototype.displayList = function (json) {
 		var self = this;
-
 		var data = json['rows'];
 		var template = '';
 
@@ -444,18 +471,20 @@
 		//var distance;
 		results.hide().empty(); //hide the existing list and empty it out first
 		document.getElementById('results_list').style.display = "none";
+		
 
 		if (data == null) {
 			//clear results list
 			results.append("<li><span class='lead'>No results found</span></li>");
 			//document.getElementById('results_list').style.display = "none";
+			self.displayModSearchCount(0);
 			results.hide();
 		} else {
 			var myStoreArray = new Array;
 			for (var row in data) {
 
-				if (myStoreArray[data[row][0]]) {
-					var myStoreArrayLoc = myStoreArray[data[row][0]];
+				if (myStoreArray[data[row][3]]) {
+					var myStoreArrayLoc = myStoreArray[data[row][3]];
 					var myStoreProductArray = new Array;
 					myStoreProductArray.push(myStoreArrayLoc[1]);
 					myStoreProductArray.push(data[row][1]);
@@ -463,11 +492,11 @@
 					var maxPrice = Math.max(myStoreArrayLoc[5], data[row][2]);
 
 					//myStoreArrayLoc[1].push(data[row][1]);
-					myStoreArray[data[row][0]] = [data[row][0], myStoreProductArray, data[row][2], data[row][3], minPrice, maxPrice];
+					myStoreArray[data[row][3]] = [data[row][0], myStoreProductArray, data[row][2], data[row][3], minPrice, maxPrice];
 				} else {
 					var myStoreProductArray = new Array;
 					myStoreProductArray.push(data[row][1]);
-					myStoreArray[data[row][0]] = [data[row][0], myStoreProductArray, data[row][2], data[row][3], data[row][2], data[row][2]];
+					myStoreArray[data[row][3]] = [data[row][0], myStoreProductArray, data[row][2], data[row][3], data[row][2], data[row][2]];
 				}
 
 			}
@@ -643,11 +672,26 @@
 		window.deleteMarkers();
 		$('#results_list').hide().empty(); //hide the existing list and empty it out first
 		$('#results_box').hide().empty(); //hide the existing list and empty it out first
+		$('#results_count').hide().empty(); //hide the existing list and empty it out first
 		document.getElementById('results_list').style.display = "none";
 		if (self.searchrecords && self.searchrecords.getMap)
 			self.searchrecords.setMap(null);
 		if (self.addrMarker && self.addrMarker.getMap)
 			self.addrMarker.setMap(null);
+		if (self.searchRadiusCircle && self.searchRadiusCircle.getMap)
+			self.searchRadiusCircle.setMap(null);
+	};
+	MapsLib.prototype.clearSearchResultsOnly = function () {
+		var self = this;
+		window.deleteMarkers();
+		$('#results_list').hide().empty(); //hide the existing list and empty it out first
+		$('#results_box').hide().empty(); //hide the existing list and empty it out first
+		$('#results_count').hide().empty(); //hide the existing list and empty it out first
+		document.getElementById('results_list').style.display = "none";
+		if (self.searchrecords && self.searchrecords.getMap)
+			self.searchrecords.setMap(null);
+		//if (self.addrMarker && self.addrMarker.getMap)
+			//self.addrMarker.setMap(null);
 		if (self.searchRadiusCircle && self.searchRadiusCircle.getMap)
 			self.searchRadiusCircle.setMap(null);
 	};
