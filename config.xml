@@ -16,10 +16,9 @@
 <gap:platform name="ios" />
 <gap:plugin name="org.apache.cordova.geolocation" />
 
-<platform name="ios">
 <feature name="Geolocation">
     <param name="ios-package" value="CDVLocation" />
 </feature>
-</platform>
+
 
 </widget>
