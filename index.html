@@ -116,6 +116,7 @@ function SwapDivsWithClick(div)
     <script type="text/javascript" src="js/jquery.address.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places"></script>
+	<script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/maps_lib.js"></script>
 <script>
 var markers = [];
@@ -174,7 +175,22 @@ function geocodeAddress(geocoder, map, address, store, product, price) {
     }
   });
 }
+document.addEventListener('deviceready', onDeviceReady, false);
 
+function onDeviceReady() {
+
+    function disp(pos) {
+        $('.lat-view').html(pos.coords.latitude);
+        $('.long-view').html(pos.coords.longitude);
+    }
+
+    $('#find_me').click(function() {
+        navigator.geolocation.getCurrentPosition(disp);
+    });
+    
+
+
+}
 
 </script>
 
@@ -225,6 +241,24 @@ function geocodeAddress(geocoder, map, address, store, product, price) {
 			  }
           });
 		  */
+		  function addrChange() {
+		      clearTimeout(addrChange.timeout);
+			  
+			  addrChange.timeout = setTimeout(function() {
+			  var search_address = $("#search_address").val();
+			     myMap.getgeoCondition(search_address, function() {});
+			     myMap.doSearch();
+			  }, 2000)
+		  }
+		  $('#search_address').on('autocompleteselect', function () {
+              addrChange();
+          });
+		  $('#search_address').on('click, change', function () {
+              addrChange();
+          });
+		  /*$('#search_address').on('blur, change', function () {
+              addrChange();
+          });*/
 		  function textChange() {
 		      clearTimeout(textChange.timeout);
 			  textChange.timeout = setTimeout(function() {
@@ -262,6 +296,7 @@ function geocodeAddress(geocoder, map, address, store, product, price) {
           });
           
           $('#find_me').click(function(){
+		    myMap.reset();
             myMap.findMe(); 
             return false;
           });

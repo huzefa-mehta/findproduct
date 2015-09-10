@@ -551,6 +551,10 @@
 						if (myStoreArray[row][4] != myStoreArray[row][5]) {
 							Price = "$" + myStoreArray[row][4] + "..$" + myStoreArray[row][5];
 						}
+						
+						if ((myStoreArray[row][2] == 'NaN') || (myStoreArray[row][4] == '') || (myStoreArray[row][5] == '')) {
+							Price = "In Store";
+						}
 						Product = myStoreArray[row][1];
 						if (myStoreArray[row][1].length != 1) {
 							Product = "Multiple matches of " + $("#text_search").val() + " found";
