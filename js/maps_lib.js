@@ -694,8 +694,8 @@
 		document.getElementById('results_list').style.display = "none";
 		if (self.searchrecords && self.searchrecords.getMap)
 			self.searchrecords.setMap(null);
-		//if (self.addrMarker && self.addrMarker.getMap)
-			//self.addrMarker.setMap(null);
+		if (self.addrMarker && self.addrMarker.getMap)
+			self.addrMarker.setMap(null);
 		if (self.searchRadiusCircle && self.searchRadiusCircle.getMap)
 			self.searchRadiusCircle.setMap(null);
 	};
@@ -716,8 +716,18 @@
 				setTimeout(function () {
 					jQuery('#myposition').remove();
 				}, 3000);
+				self.currentPinpoint = coords;
+				if (self.addrMarkerImage != '') {
+						self.addrMarker = new google.maps.Marker({
+								position : self.currentPinpoint,
+								map : self.map,
+								icon : self.addrMarkerImage,
+								animation : google.maps.Animation.DROP,
+								//title : address
+							});
+					}
 			}, function error(msg) {
-				alert('Please enable your GPS position future.');
+				alert('Please enable your GPS position.');
 			}, {
 				//maximumAge: 600000,
 				//timeout: 5000,
