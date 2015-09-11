@@ -1,5 +1,5 @@
 <widget xmlns     = "http://www.w3.org/ns/widgets"
-        xmlns:gap = "http://findproduct.us"
+        xmlns:gap = "http://phonegap.com/ns/1.0"
         id        = "findproduct.us"
         version   = "0.0.1">
 
