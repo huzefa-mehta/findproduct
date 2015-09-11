@@ -60,17 +60,15 @@
 		google.maps.event.addDomListener(window, 'resize', function () {
 			self.map.setCenter(self.map_centroid);
 		});
-		
+
 		google.maps.event.addDomListener(self.map, 'zoom_changed', function () {
-			//window.alert('zoom_changed')
-			window.setTimeout(function() {
-			self.setRadius(self.map);
-			self.drawSearchRadiusCircle(self.currentPinpoint);
-			self.doSearch();
+			window.setTimeout(function () {
+				self.setRadius(self.map);
+				self.drawSearchRadiusCircle(self.currentPinpoint);
+				self.doSearch();
 			}, 2000);
 		});
-		
-		
+
 		self.searchrecords = null;
 
 		//reset filters
@@ -123,11 +121,6 @@
 			});
 		self.fusionTable = self.searchrecords;
 		self.searchrecords.setMap(map);
-		//self.getCount(whereClause);
-		//document.getElementById('results_list').style.display = "none";
-		//self.displayModSearchCount(0);
-		//self.getList(whereClause);
-		//document.getElementById('results_list').style.display = "none";
 	};
 	MapsLib.prototype.initAutoComplete = function (tableId) {
 		// Retrieve the unique product names using GROUP BY workaround.
@@ -148,26 +141,15 @@
 			}
 
 			// Use the results to create the autocomplete options.
-			/*
-			function textChange2() {
-		      clearTimeout(textChange2.timeout);
-			  textChange2.timeout = setTimeout(function() {
-			     doSearch();
-			  }, 1000)
-		    }
-			*/
+
 			$('#text_search').autocomplete({
 				source : results,
 				minLength : 2,
 				//change: function(e, u) {
-					//textChange2();
+				//textChange2();
 				//}
 			});
-			//$('#test_search').data("ui-autocomplete")._trigger("change");
-			//$( '#test_search').autocomplete({
-			//      search: function( event, ui ) {this.doSearch();}
-			//});
-			//$('#text_search').autocomplete("search");
+
 		});
 	}
 
@@ -217,35 +199,6 @@
 					$.address.parameter('address', encodeURIComponent(address));
 					$.address.parameter('radius', encodeURIComponent(self.searchRadius));
 					map.setCenter(self.currentPinpoint);
-					/*
-					// set zoom level based on search radius
-					if (self.searchRadius >= 1610000)
-						map.setZoom(4); // 1,000 miles
-					else if (self.searchRadius >= 805000)
-						map.setZoom(5); // 500 miles
-					else if (self.searchRadius >= 402500)
-						map.setZoom(6); // 250 miles
-					else if (self.searchRadius >= 161000)
-						map.setZoom(7); // 100 miles
-					else if (self.searchRadius >= 80500)
-						map.setZoom(8); // 100 miles
-					else if (self.searchRadius >= 40250)
-						map.setZoom(9); // 100 miles
-					else if (self.searchRadius >= 16100)
-						map.setZoom(11); // 10 miles
-					else if (self.searchRadius >= 8050)
-						map.setZoom(12); // 5 miles
-					else if (self.searchRadius >= 3220)
-						map.setZoom(13); // 2 miles
-					else if (self.searchRadius >= 1610)
-						map.setZoom(14); // 1 mile
-					else if (self.searchRadius >= 805)
-						map.setZoom(15); // 1/2 mile
-					else if (self.searchRadius >= 400)
-						map.setZoom(16); // 1/4 mile
-					else
-						self.map.setZoom(17);
-					*/
 
 					if (self.addrMarkerImage != '') {
 						self.addrMarker = new google.maps.Marker({
@@ -271,22 +224,25 @@
 
 	MapsLib.prototype.doSearch = function () {
 		var self = this;
+		//window.alert("doSearch")
 		var text_search = $("#text_search").val().replace("'", "\\'");
 		if (text_search == '') {
 			self.clearSearchResultsOnly();
 			self.displayModSearchCount(0);
 			return;
 		}
-		if (self.searchInProgress == 1) {return;}
+		if (self.searchInProgress == 1) {
+			return;
+		}
 		self.searchInProgress = 1;
 		self.clearSearchResultsOnly();
 		var address = $("#search_address").val();
-		//self.searchRadius = $("#search_radius").val();
+
 		self.setRadius(self.map)
 		self.whereClause = self.locationColumn + " not equal to ''";
 
 		//-----custom filters-----
-		
+
 		if (text_search != '')
 			self.whereClause += " AND 'Product' contains ignoring case '" + text_search + "'";
 		else
@@ -300,7 +256,7 @@
 			self.getList(self.whereClause);
 		});
 		document.getElementById('results_list').style.display = "none";
-        self.searchInProgress = 0;
+		self.searchInProgress = 0;
 	};
 
 	MapsLib.prototype.reset = function () {
@@ -329,7 +285,7 @@
 				if (results[1]) {
 					$('#search_address').val(results[1].formatted_address);
 					$('.hint').focus();
-					self.doSearch();
+					//self.doSearch();
 				}
 			} else {
 				alert("Geocoder failed due to: " + status);
@@ -340,20 +296,23 @@
 	MapsLib.prototype.drawSearchRadiusCircle = function (point) {
 		var self = this;
 		return;
-		if (self.debug == false) {return;}
-		var circleOptions = {
-			strokeColor : "#4b58a6",
-			strokeOpacity : 0.3,
-			strokeWeight : 1,
-			fillColor : "#4b58a6",
-			fillOpacity : 0.05,
-			map : self.map,
-			center : point,
-			clickable : false,
-			zIndex : -1,
-			radius : parseInt(self.searchRadius)
-		};
-		self.searchRadiusCircle = new google.maps.Circle(circleOptions);
+		if (self.debug == false) {
+			return;
+		} else {
+			var circleOptions = {
+				strokeColor : "#4b58a6",
+				strokeOpacity : 0.3,
+				strokeWeight : 1,
+				fillColor : "#4b58a6",
+				fillOpacity : 0.05,
+				map : self.map,
+				center : point,
+				clickable : false,
+				zIndex : -1,
+				radius : parseInt(self.searchRadius)
+			};
+			self.searchRadiusCircle = new google.maps.Circle(circleOptions);
+		}
 	};
 
 	MapsLib.prototype.query = function (query_opts, callback) {
@@ -448,10 +407,6 @@
 	MapsLib.prototype.getList = function (whereClause) {
 		var self = this;
 		var selectColumns = "'Store', 'Product', 'Price', 'Location'";
-		//var selectColumns = "'Store' FROM (SELECT 'Store','Location' FROM  " + self.fusionTableId + ")";
-		//queryStr.push("SELECT " + query_opts.select);
-		//queryStr.push(" FROM " + self.fusionTableId);
-		//whereClause += " GROUP BY Store";
 
 		self.query({
 			select : selectColumns,
@@ -471,18 +426,17 @@
 		//var distance;
 		results.hide().empty(); //hide the existing list and empty it out first
 		document.getElementById('results_list').style.display = "none";
-		
 
 		if (data == null) {
 			//clear results list
 			results.append("<li><span class='lead'>No results found</span></li>");
-			//document.getElementById('results_list').style.display = "none";
+
 			self.displayModSearchCount(0);
 			results.hide();
 		} else {
 			var myStoreArray = new Array;
-			for (var row in data) {
 
+			for (var row in data) {
 				if (myStoreArray[data[row][3]]) {
 					var myStoreArrayLoc = myStoreArray[data[row][3]];
 					var myStoreProductArray = new Array;
@@ -490,12 +444,20 @@
 					myStoreProductArray.push(data[row][1]);
 					var minPrice = Math.min(myStoreArrayLoc[4], data[row][2]);
 					var maxPrice = Math.max(myStoreArrayLoc[5], data[row][2]);
+					/*
+					window.alert(myStoreArray[data[row][3]][4])
+	                window.alert(data[row][3])
+                    window.alert(minPrice);
+					window.alert(data[row][2]) */
 
-					//myStoreArrayLoc[1].push(data[row][1]);
 					myStoreArray[data[row][3]] = [data[row][0], myStoreProductArray, data[row][2], data[row][3], minPrice, maxPrice];
+
 				} else {
 					var myStoreProductArray = new Array;
+
 					myStoreProductArray.push(data[row][1]);
+					var minPrice = data[row][2];
+					var maxPrice = data[row][3]
 					myStoreArray[data[row][3]] = [data[row][0], myStoreProductArray, data[row][2], data[row][3], data[row][2], data[row][2]];
 				}
 
@@ -542,17 +504,19 @@
 					var Duration = '';
 					var template = '';
 					template = "<small><table border='\"1\" style=\"width:100%\"'>\
-								<strong><th>Store</th><th>Product</th><th>Price</th><th>Dist/Time</th>";
+																																						<strong><th>Store</th><th>Product</th><th>Price</th><th>Dist/Time</th>";
 					for (var row in myStoreArray) {
 
 						Distance = distances[Count];
 						Duration = durations[Count];
 						Price = "$" + myStoreArray[row][2];
 						if (myStoreArray[row][4] != myStoreArray[row][5]) {
+
 							Price = "$" + myStoreArray[row][4] + "..$" + myStoreArray[row][5];
 						}
-						
-						if ((myStoreArray[row][2] == 'NaN') || (myStoreArray[row][4] == '') || (myStoreArray[row][5] == '')) {
+
+						if ((myStoreArray[row][2] == 'NaN') || (myStoreArray[row][4] == 'NaN') || (myStoreArray[row][5] == 'NaN')) {
+
 							Price = "In Store";
 						}
 						Product = myStoreArray[row][1];
@@ -560,83 +524,23 @@
 							Product = "Multiple matches of " + $("#text_search").val() + " found";
 						}
 						template = template.concat("<tr>\
-								          <td><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + myStoreArray[row][1] + "\",\"" + Price + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
-								              <td>" + Product + "</td><td>" + Price + "</td>\
-											  <td>" + Distance + "/" + Duration + "</td>\
-											  </tr>");
-						/*
-						template = "<small>\
-						<div class='row-fluid item-list'>\
-						<div class='span12'><tr>\
-						<td><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + myStoreArray[row][1] + "\",\"" + Price + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
-						<td>" + Distance + " " + Duration + "</td>\
-						<td>" + Product + "</td><td>" + Price + "</td>\
-						<br /></tr>\
-						</div>\
-						</div></small>";
-						 */
+																																																          <td><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + myStoreArray[row][1] + "\",\"" + Price + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
+																																																              <td>" + Product + "</td><td>" + Price + "</td>\
+																																																			  <td>" + Distance + "/" + Duration + "</td>\
+																																																			  </tr>");
+
 						Count = Count + 1;
 
 					}
 					template = template.concat("</table></small>");
 					results.append(template);
-					//window.alert(template);
 
 					self.displayModSearchCount(Count);
 
 				}
 
 			});
-			/*
-			var Price = '';
-			var Product = '';
-			var Count = 0;
-			var Distance = '';
-			var Duration = '';
-			window.alert(self.globalDist.length);
-			//window.alert(distances.length);
-			for (var row in myStoreArray) {
 
-			Distance = distances[Count] + "mi";
-			Duration = durations[Count] + "hr";
-			Price = "$" + myStoreArray[row][2];
-			if (myStoreArray[row][4] != myStoreArray[row][5]) {
-			Price = "$" + myStoreArray[row][4] + "..$" + myStoreArray[row][5];
-			}
-			Product = myStoreArray[row][1];
-			if (myStoreArray[row][1].length != 1) {
-			Product = "Multiple matches of " + $("#text_search").val() + " found";
-			}
-			template = "<small>\
-			<div class='row-fluid item-list'>\
-			<div class='span12'>\
-			<strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + myStoreArray[row][1] + "\",\"" + Price + "\")'>" + myStoreArray[row][0] + "</a></strong>\
-			" + Distance + " " + Duration + "\
-			<br />\
-			" + Product + " " + Price + "\
-			<br />\
-			</div>\
-			</div></small>";
-			Count = Count + 1;
-			results.append(template);
-			}
-			self.displayModSearchCount(Count);
-			 */
-			/*
-			for (var row in data) {
-			//https://maps.googleapis.com/maps/api/distancematrix/
-			template = "<small>\
-			<div class='row-fluid item-list'>\
-			<div class='span12'>\
-			<strong><a href='javascript:centerOn(\"" + data[row][3] + "\")'>" + data[row][0] + "</a></strong>\
-			<br />\
-			" + data[row][1] + " $" + data[row][2] + "\
-			<br />\
-			</div>\
-			</div></small>";
-			results.append(template);
-			}
-			 */
 		}
 		//results.fadeIn();
 		results.hide();
@@ -694,8 +598,8 @@
 		document.getElementById('results_list').style.display = "none";
 		if (self.searchrecords && self.searchrecords.getMap)
 			self.searchrecords.setMap(null);
-		if (self.addrMarker && self.addrMarker.getMap)
-			self.addrMarker.setMap(null);
+		//if (self.addrMarker && self.addrMarker.getMap)
+			//self.addrMarker.setMap(null);
 		if (self.searchRadiusCircle && self.searchRadiusCircle.getMap)
 			self.searchRadiusCircle.setMap(null);
 	};
@@ -717,15 +621,16 @@
 					jQuery('#myposition').remove();
 				}, 3000);
 				self.currentPinpoint = coords;
+
 				if (self.addrMarkerImage != '') {
-						self.addrMarker = new google.maps.Marker({
-								position : self.currentPinpoint,
-								map : self.map,
-								icon : self.addrMarkerImage,
-								animation : google.maps.Animation.DROP,
-								//title : address
-							});
-					}
+					self.addrMarker = new google.maps.Marker({
+							position : self.currentPinpoint,
+							map : self.map,
+							icon : self.addrMarkerImage,
+							animation : google.maps.Animation.DROP,
+							title : ''
+						});
+				}
 			}, function error(msg) {
 				alert('Please enable your GPS position.');
 			}, {
@@ -737,6 +642,7 @@
 			alert("Geolocation API is not supported in your browser.");
 		}
 	};
+	
 	if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 		module.exports = MapsLib;
 	} else if (typeof define === 'function' && define.amd) {

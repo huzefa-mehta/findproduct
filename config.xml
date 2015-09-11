@@ -13,15 +13,12 @@
         Find Product
     </author>
 
-<gap:platform name="ios" />
 
 <gap:plugin name="org.apache.cordova.geolocation" />
 <preference name="permissions" value="none"/>
 
 
-<feature name="Geolocation">
-    <param name="ios-package" value="CDVLocation" />
-</feature>
+
 
 
 </widget>
