@@ -628,7 +628,7 @@
 							map : self.map,
 							icon : self.addrMarkerImage,
 							animation : google.maps.Animation.DROP,
-							title : ''
+							title : $('#search_address').val()
 						});
 				}
 			}, function error(msg) {
