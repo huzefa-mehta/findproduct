@@ -164,7 +164,7 @@ function geocodeAddress(geocoder, map, address, store, product, price) {
       });
 	  //google.maps.event.addListener(marker, 'click', function(event) {
             infoWindow.setPosition(results[0].geometry.location);
-            infoWindow.setContent('<b><a href=\"http://maps.google.com?q=' + address + '\", target=\"_blank\">'+ store + '<br><font size="1">(click for directions)</font></a><br></b>' + product + '<br>' + price);
+            infoWindow.setContent('<small><table style=\"width:200px\"><b><tr><td><a href=\"http://maps.google.com?q=' + address + '\", target=\"_blank\">'+ store + '<br><font size="1">(click for directions)</font></a></b><td></td></tr><tr><td>' + product + '</td><td>' + price + '</td></tr></small></table>');
             infoWindow.open(map, marker);
 			setTimeout(function () { infoWindow.close(); }, 20000);
         //  });
@@ -222,31 +222,25 @@ function onDeviceReady() {
 		 
 
           
-          $('#search_radius').change(function(){
-            myMap.doSearch();
-          });
+
           
           $('#search').click(function(){
-            myMap.doSearch();
+		    //window.alert('search')
+            //myMap.doSearch();
+			textChange();
           });
-		  var executed = false
-		  /*
-		  $('#text_search').on('blur, change', function () {
-		    if (executed == false) {
-			  executed = true;
-              myMap.doSearch();
-			  executed = false;
-			  }
-          });
-		  */
+		  var inAddrChange = false;
 		  function addrChange() {
+		    if (inAddrChange == true) {return;}
 		      clearTimeout(addrChange.timeout);
+			  //window.alert('addrchange')
 			  
 			  addrChange.timeout = setTimeout(function() {
 			  var search_address = $("#search_address").val();
 			     myMap.getgeoCondition(search_address, function() {});
 			     myMap.doSearch();
-			  }, 2000)
+			  }, 1500)
+			  inAddrChange = false;
 		  }
 		  $('#search_address').on('autocompleteselect', function () {
               addrChange();
@@ -254,30 +248,38 @@ function onDeviceReady() {
 		  $('#search_address').on('click, change', function () {
               addrChange();
           });
-		  /*$('#search_address').on('blur, change', function () {
+		  /*
+		  $('#search_address').on('blur, change', function () {
               addrChange();
           });*/
 		  var inTextChange = false;
 		  function textChange() {
 	          if (inTextChange == true) {return;}
+			  //window.alert('textChange')
 			  inTextChange = true;
 		      clearTimeout(textChange.timeout);
 			  textChange.timeout = setTimeout(function() {
 			     myMap.doSearch();
-			  }, 1000)
+			  }, 1500)
+			  $('#text_search').autocomplete('close');
 			  inTextChange = false;
 		  }
 		  
 		  $('#text_search').on('click, change', function () {
-
-              setTimeout(textChange(), 1500);
+              //window.alert('click_change_text_search')
+              textChange();
+			  
           });
+		  /*
 		  $('#text_search').on('blur, change', function () {
-              setTimeout(textChange(), 1500);
+		      window.alert('blur_change_text_search')
+              textChange();
           });
+		  */
 		 
 		  $('#text_search').on('autocompleteselect', function () {
-              setTimeout(textChange(), 1000);
+		      window.alert('autocompleteselect text_search')
+              textChange();
           });
 		  $("#text_search").on('keydown', function(e){
               var key =  e.keyCode ? e.keyCode : e.which;

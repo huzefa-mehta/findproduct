@@ -6,7 +6,7 @@
 
 		this.recordName = options.recordName || "result"; //for showing a count of results
 		this.recordNamePlural = options.recordNamePlural || "results";
-		this.searchRadius = options.searchRadius || 805; //in meters ~ 1/2 mile
+		this.searchRadius = options.searchRadius || 3220; //in meters ~ 1/2 mile
 
 		// the encrypted Table ID of your Fusion Table (found under File => About)
 		this.fusionTableId = options.fusionTableId || "",
@@ -24,7 +24,7 @@
 		this.locationScope = options.locationScope || "";
 
 		// zoom level when map is loaded (bigger is more zoomed in)
-		this.defaultZoom = options.defaultZoom || 11;
+		this.defaultZoom = options.defaultZoom || 13;
 
 		// center that your map defaults to
 		this.map_centroid = new google.maps.LatLng(options.map_center[0], options.map_center[1]);
@@ -60,32 +60,41 @@
 		google.maps.event.addDomListener(window, 'resize', function () {
 			self.map.setCenter(self.map_centroid);
 		});
-
+		var prevZoom;
+		this.prevZoom = this.defaultZoom;
+		//self.map.setZoom(this.defaultZoom)
+		//self.setRadius(self.map)
 		google.maps.event.addDomListener(self.map, 'zoom_changed', function () {
 			window.setTimeout(function () {
+				//window.alert(self.map.getZoom())
+				//window.alert(this.prevZoom)
+				//window.alert('zoom_changed')
 				self.setRadius(self.map);
 				self.drawSearchRadiusCircle(self.currentPinpoint);
 				self.doSearch();
-			}, 2000);
+			}, 1500);
 		});
 
 		self.searchrecords = null;
 
 		//reset filters
 		$("#search_address").val(self.convertToPlainString($.address.parameter('address')));
+		/*
 		var loadRadius = self.convertToPlainString($.address.parameter('radius'));
 		if (loadRadius != "")
-			$("#search_radius").val(loadRadius);
+		$("#search_radius").val(loadRadius);
 		else
-			$("#search_radius").val(self.searchRadius);
+		$("#search_radius").val(self.searchRadius);
 
-		$(":checkbox").prop("checked", "checked");
+		$(":checkbox").prop("checked", "checked");*/
 		$("#result_box").hide();
 
 		//-----custom initializers-----
 		$("#text_search").val("");
+
 		self.initAutoComplete(self.fusionTableId);
 		self.findMe();
+
 		var searchInProgress = 0;
 		var prevText = '';
 		var prevAddress = '';
@@ -155,7 +164,7 @@
 
 	MapsLib.prototype.setRadius = function (map) {
 		var self = this;
-		self.searchRadius = 1610;
+		self.searchRadius = 3220;
 		if (map.getZoom() == 4)
 			self.searchRadius = 1610000;
 		else if (map.getZoom() == 5)
@@ -197,8 +206,9 @@
 					var map = self.map;
 
 					$.address.parameter('address', encodeURIComponent(address));
-					$.address.parameter('radius', encodeURIComponent(self.searchRadius));
+					//$.address.parameter('radius', encodeURIComponent(self.searchRadius));
 					map.setCenter(self.currentPinpoint);
+					//window.alert(self.map.getZoom())
 
 					if (self.addrMarkerImage != '') {
 						self.addrMarker = new google.maps.Marker({
@@ -224,6 +234,9 @@
 
 	MapsLib.prototype.doSearch = function () {
 		var self = this;
+		if (self.searchInProgress == 1) {
+			return;
+		}
 		//window.alert("doSearch")
 		var text_search = $("#text_search").val().replace("'", "\\'");
 		if (text_search == '') {
@@ -231,9 +244,7 @@
 			self.displayModSearchCount(0);
 			return;
 		}
-		if (self.searchInProgress == 1) {
-			return;
-		}
+
 		self.searchInProgress = 1;
 		self.clearSearchResultsOnly();
 		var address = $("#search_address").val();
@@ -285,7 +296,6 @@
 				if (results[1]) {
 					$('#search_address').val(results[1].formatted_address);
 					$('.hint').focus();
-					//self.doSearch();
 				}
 			} else {
 				alert("Geocoder failed due to: " + status);
@@ -423,7 +433,6 @@
 		var template = '';
 
 		var results = $('#results_list');
-		//var distance;
 		results.hide().empty(); //hide the existing list and empty it out first
 		document.getElementById('results_list').style.display = "none";
 
@@ -434,21 +443,21 @@
 			self.displayModSearchCount(0);
 			results.hide();
 		} else {
-			var myStoreArray = new Array;
+			//window.alert('displayList')
+			var myStoreArray = {};
 
 			for (var row in data) {
 				if (myStoreArray[data[row][3]]) {
-					var myStoreArrayLoc = myStoreArray[data[row][3]];
+					//var myStoreArrayLoc = myStoreArray[data[row][3]];
 					var myStoreProductArray = new Array;
-					myStoreProductArray.push(myStoreArrayLoc[1]);
+					myStoreProductArray.push(myStoreArray[data[row][3]][1]);
 					myStoreProductArray.push(data[row][1]);
-					var minPrice = Math.min(myStoreArrayLoc[4], data[row][2]);
-					var maxPrice = Math.max(myStoreArrayLoc[5], data[row][2]);
-					/*
-					window.alert(myStoreArray[data[row][3]][4])
-	                window.alert(data[row][3])
-                    window.alert(minPrice);
-					window.alert(data[row][2]) */
+					var minPrice = myStoreArray[data[row][3]][4];
+					var maxPrice = myStoreArray[data[row][3]][4];
+					if (!isNaN(data[row][2])) {
+						minPrice = Math.min(minPrice, data[row][2]);
+						maxPrice = Math.max(maxPrice, data[row][2]);
+					}
 
 					myStoreArray[data[row][3]] = [data[row][0], myStoreProductArray, data[row][2], data[row][3], minPrice, maxPrice];
 
@@ -456,9 +465,20 @@
 					var myStoreProductArray = new Array;
 
 					myStoreProductArray.push(data[row][1]);
-					var minPrice = data[row][2];
-					var maxPrice = data[row][3]
-					myStoreArray[data[row][3]] = [data[row][0], myStoreProductArray, data[row][2], data[row][3], data[row][2], data[row][2]];
+					var minPrice,
+					maxPrice,
+					Price;
+					minPrice = 0.00;
+					maxPrice = 0.00;
+					Price = 0.00;
+					if (!isNaN(data[row][2])) {
+						minPrice = data[row][2];
+						maxPrice = data[row][2];
+					}
+					var newArray = [data[row][0], myStoreProductArray, minPrice, data[row][3], minPrice, maxPrice];
+
+					myStoreArray[data[row][3]] = newArray;
+
 				}
 
 			}
@@ -504,18 +524,27 @@
 					var Duration = '';
 					var template = '';
 					template = "<small><table border='\"1\" style=\"width:100%\"'>\
-																																						<strong><th>Store</th><th>Product</th><th>Price</th><th>Dist/Time</th>";
+																																												<strong><th>Store</th><th>Product</th><th>Price</th><th>Dist/Time</th>";
 					for (var row in myStoreArray) {
 
 						Distance = distances[Count];
 						Duration = durations[Count];
+
 						Price = "$" + myStoreArray[row][2];
 						if (myStoreArray[row][4] != myStoreArray[row][5]) {
+							var minString = "";
+							var maxString = "";
+							if (myStoreArray[row][4] != 0.00) {
+								minString = "$" + myStoreArray[row][4]
+							}
+							if (myStoreArray[row][5] != 0.00) {
+								maxString = "$" + myStoreArray[row][5]
+							}
 
-							Price = "$" + myStoreArray[row][4] + "..$" + myStoreArray[row][5];
+							Price = minString + ".." + maxString;
 						}
 
-						if ((myStoreArray[row][2] == 'NaN') || (myStoreArray[row][4] == 'NaN') || (myStoreArray[row][5] == 'NaN')) {
+						if ((myStoreArray[row][4] == 0.00) && (myStoreArray[row][5] == 0.00)) {
 
 							Price = "In Store";
 						}
@@ -524,10 +553,10 @@
 							Product = "Multiple matches of " + $("#text_search").val() + " found";
 						}
 						template = template.concat("<tr>\
-																																																          <td><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + myStoreArray[row][1] + "\",\"" + Price + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
-																																																              <td>" + Product + "</td><td>" + Price + "</td>\
-																																																			  <td>" + Distance + "/" + Duration + "</td>\
-																																																			  </tr>");
+																																																								          <td><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + myStoreArray[row][1] + "\",\"" + Price + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
+																																																								              <td>" + Product + "</td><td>" + Price + "</td>\
+																																																											  <td>" + Distance + "/" + Duration + "</td>\
+																																																											  </tr>");
 
 						Count = Count + 1;
 
@@ -599,7 +628,7 @@
 		if (self.searchrecords && self.searchrecords.getMap)
 			self.searchrecords.setMap(null);
 		//if (self.addrMarker && self.addrMarker.getMap)
-			//self.addrMarker.setMap(null);
+		//self.addrMarker.setMap(null);
 		if (self.searchRadiusCircle && self.searchRadiusCircle.getMap)
 			self.searchRadiusCircle.setMap(null);
 	};
@@ -615,22 +644,26 @@
 				var coords = new google.maps.LatLng(latitude, longitude);
 				self.map.panTo(coords);
 				self.addrFromLatLng(coords);
-				self.map.setZoom(14);
+				self.getgeoCondition($('#search_address').val(), function (geoCondition) {});
+				//self.map.setZoom(this.defaultZoom);
+				prevZoom = this.defaultZoom;
 				jQuery('#map_canvas').append('<div id="myposition"><i class="fontello-target"></i></div>');
 				setTimeout(function () {
 					jQuery('#myposition').remove();
 				}, 3000);
+				/*
 				self.currentPinpoint = coords;
 
 				if (self.addrMarkerImage != '') {
-					self.addrMarker = new google.maps.Marker({
-							position : self.currentPinpoint,
-							map : self.map,
-							icon : self.addrMarkerImage,
-							animation : google.maps.Animation.DROP,
-							title : $('#search_address').val()
-						});
-				}
+				self.addrMarker = new google.maps.Marker({
+				position : self.currentPinpoint,
+				map : self.map,
+				icon : self.addrMarkerImage,
+				animation : google.maps.Animation.DROP,
+				title : $('#search_address').val()
+				});
+				}*/
+
 			}, function error(msg) {
 				alert('Please enable your GPS position.');
 			}, {
@@ -642,7 +675,7 @@
 			alert("Geolocation API is not supported in your browser.");
 		}
 	};
-	
+
 	if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 		module.exports = MapsLib;
 	} else if (typeof define === 'function' && define.amd) {
