@@ -146,14 +146,14 @@ function deleteMarkers() {
   clearMarkers();
   markers = [];
 }
-function centerOn(loc, store, product, price) {
+function centerOn(loc, store, product, price, phone, website, store_type, description) {
     deleteMarkers();
 	var map = window.map;
 	var geocoder = new google.maps.Geocoder();
-	geocodeAddress(geocoder, map, loc, store, product, price);
+	geocodeAddress(geocoder, map, loc, store, product, price, phone, website, store_type, description);
 }
 
-function geocodeAddress(geocoder, map, address, store, product, price) {
+function geocodeAddress(geocoder, map, address, store, product, price, phone, website, store_type, description) {
   geocoder.geocode({address: address}, function(results, status) {
     if (status === google.maps.GeocoderStatus.OK) {
 	  var infoWindow = new google.maps.InfoWindow();
@@ -164,8 +164,15 @@ function geocodeAddress(geocoder, map, address, store, product, price) {
       });
 	  //google.maps.event.addListener(marker, 'click', function(event) {
             infoWindow.setPosition(results[0].geometry.location);
-            infoWindow.setContent('<small><table style=\"width:200px\"><b><tr><td><a href=\"http://maps.google.com?q=' + address + '\", target=\"_blank\">'+ store + '<br><font size="1">(click for directions)</font></a></b><td></td></tr><tr><td>' + product + '</td><td>' + price + '</td></tr></small></table>');
+			var saddr = $('#search_address').val();
+			//var daddr = address.replace(" ", "+");
+			infoWindow.setContent('<small><table style=\"width:200px\"><b><tr><td><a href=\"http://maps.google.com?saddr='+saddr+'&daddr='+address+'\", target=\"_blank\">'+ store + '<br><font size="1">(click for directions)</font></a></b><td>'+ phone +'<br>' + website + '<br>'+ store_type +'</td></tr><tr><td>' + product  + '<br>' + description + '</td><td>' + price + '</td></tr></small></table>');
+         
+            //infoWindow.setContent('<small><table style=\"width:200px\"><b><tr><td><a href=\"http://maps.google.com?q=' + address + '\", target=\"_blank\">'+ store + '<br><font size="1">(click for directions)</font></a></b><td>'+ phone +'<br>' + website + '<br>'+ store_type +'</td></tr><tr><td>' + product  + '<br>' + description + '</td><td>' + price + '</td></tr></small></table>');
             infoWindow.open(map, marker);
+			google.maps.event.addListener(marker, 'click', function() {
+                            infoWindow.open(map, marker);
+            });
 			setTimeout(function () { infoWindow.close(); }, 20000);
         //  });
 	  markers.push(marker);
@@ -230,8 +237,11 @@ function onDeviceReady() {
 			textChange();
           });
 		  var inAddrChange = false;
+		  var prevAddr = '';
 		  function addrChange() {
 		    if (inAddrChange == true) {return;}
+			if (prevAddr == $('#search_address').val()) {return;}
+			  inAddrChange = true;
 		      clearTimeout(addrChange.timeout);
 			  //window.alert('addrchange')
 			  
@@ -248,14 +258,17 @@ function onDeviceReady() {
 		  $('#search_address').on('click, change', function () {
               addrChange();
           });
-		  /*
+		  
 		  $('#search_address').on('blur, change', function () {
               addrChange();
-          });*/
+          });
 		  var inTextChange = false;
+		  var prevText = '';
 		  function textChange() {
 	          if (inTextChange == true) {return;}
 			  //window.alert('textChange')
+			  if (prevText == $('#text_search').val()) {return;}
+			  prevText = $('#text_search').val();
 			  inTextChange = true;
 		      clearTimeout(textChange.timeout);
 			  textChange.timeout = setTimeout(function() {
@@ -270,15 +283,15 @@ function onDeviceReady() {
               textChange();
 			  
           });
-		  /*
+		  
 		  $('#text_search').on('blur, change', function () {
-		      window.alert('blur_change_text_search')
+		      //window.alert('blur_change_text_search')
               textChange();
           });
-		  */
+		  
 		 
 		  $('#text_search').on('autocompleteselect', function () {
-		      window.alert('autocompleteselect text_search')
+		      //window.alert('autocompleteselect text_search')
               textChange();
           });
 		  $("#text_search").on('keydown', function(e){

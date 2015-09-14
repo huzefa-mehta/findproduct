@@ -6,7 +6,7 @@
 
 		this.recordName = options.recordName || "result"; //for showing a count of results
 		this.recordNamePlural = options.recordNamePlural || "results";
-		this.searchRadius = options.searchRadius || 3220; //in meters ~ 1/2 mile
+		this.searchRadius = options.searchRadius || 5000; //in meters ~ 1/2 mile
 
 		// the encrypted Table ID of your Fusion Table (found under File => About)
 		this.fusionTableId = options.fusionTableId || "",
@@ -62,9 +62,13 @@
 		});
 		var prevZoom;
 		this.prevZoom = this.defaultZoom;
+		var zoomSearchInProgress;
+		zoomSearchInProgress = false;
 		//self.map.setZoom(this.defaultZoom)
 		//self.setRadius(self.map)
 		google.maps.event.addDomListener(self.map, 'zoom_changed', function () {
+			if (zoomSearchInProgress) {return;}
+			zoomSearchInProgress = true;
 			window.setTimeout(function () {
 				//window.alert(self.map.getZoom())
 				//window.alert(this.prevZoom)
@@ -73,6 +77,7 @@
 				self.drawSearchRadiusCircle(self.currentPinpoint);
 				self.doSearch();
 			}, 1500);
+			zoomSearchInProgress = false;
 		});
 
 		self.searchrecords = null;
@@ -164,33 +169,33 @@
 
 	MapsLib.prototype.setRadius = function (map) {
 		var self = this;
-		self.searchRadius = 3220;
+		self.searchRadius = 5000;
 		if (map.getZoom() == 4)
-			self.searchRadius = 1610000;
+			self.searchRadius = 256000;
 		else if (map.getZoom() == 5)
-			self.searchRadius = 805000;
+			self.searchRadius = 128000;
 		else if (map.getZoom() == 6)
-			self.searchRadius = 402500;
+			self.searchRadius = 640000;
 		else if (map.getZoom() == 7)
-			self.searchRadius = 161000;
+			self.searchRadius = 320000;
 		else if (map.getZoom() == 8)
-			self.searchRadius = 80500;
+			self.searchRadius = 160000;
 		else if (map.getZoom() == 9)
-			self.searchRadius = 40250;
+			self.searchRadius = 80000;
 		else if (map.getZoom() == 10)
-			self.searchRadius = 20125;
+			self.searchRadius = 40000;
 		else if (map.getZoom() == 11)
-			self.searchRadius = 16100;
+			self.searchRadius = 20000;
 		else if (map.getZoom() == 12)
-			self.searchRadius = 8050;
+			self.searchRadius = 10000;
 		else if (map.getZoom() == 13)
-			self.searchRadius = 3220;
+			self.searchRadius = 5000;
 		else if (map.getZoom() == 14)
-			self.searchRadius = 1610;
+			self.searchRadius = 2500;
 		else if (map.getZoom() == 15)
-			self.searchRadius = 805;
+			self.searchRadius = 1250;
 		else if (map.getZoom() == 16)
-			self.searchRadius = 400;
+			self.searchRadius = 625;
 	}
 	MapsLib.prototype.getgeoCondition = function (address, callback) {
 		var self = this;
@@ -215,7 +220,7 @@
 								position : self.currentPinpoint,
 								map : self.map,
 								icon : self.addrMarkerImage,
-								animation : google.maps.Animation.DROP,
+								//animation : google.maps.Animation.DROP,
 								title : address
 							});
 					}
@@ -305,8 +310,8 @@
 
 	MapsLib.prototype.drawSearchRadiusCircle = function (point) {
 		var self = this;
-		return;
-		if (self.debug == false) {
+		//return;
+		if (!self.debug) {
 			return;
 		} else {
 			var circleOptions = {
@@ -416,12 +421,12 @@
 	};
 	MapsLib.prototype.getList = function (whereClause) {
 		var self = this;
-		var selectColumns = "'Store', 'Product', 'Price', 'Location'";
+		var selectColumns = "'Store', 'Product', 'Price', 'Location', 'Product Type', 'Quantity', 'Phone', 'Website', 'Store type', 'Product Description'";
 
 		self.query({
 			select : selectColumns,
-			where : whereClause,
-			groupby : "GROUP BY 'Store'"
+			where : whereClause
+			//groupby : "GROUP BY 'Store'"
 		}, function (response) {
 			self.displayList(response);
 		});
@@ -452,30 +457,30 @@
 					var myStoreProductArray = new Array;
 					myStoreProductArray.push(myStoreArray[data[row][3]][1]);
 					myStoreProductArray.push(data[row][1]);
-					var minPrice = myStoreArray[data[row][3]][4];
-					var maxPrice = myStoreArray[data[row][3]][4];
+					var minPrice = myStoreArray[data[row][3]][10];
+					var maxPrice = myStoreArray[data[row][3]][11];
 					if (!isNaN(data[row][2])) {
 						minPrice = Math.min(minPrice, data[row][2]);
 						maxPrice = Math.max(maxPrice, data[row][2]);
 					}
 
-					myStoreArray[data[row][3]] = [data[row][0], myStoreProductArray, data[row][2], data[row][3], minPrice, maxPrice];
+					myStoreArray[data[row][3]] = [data[row][0], myStoreProductArray, data[row][2], data[row][3], '', data[row][4], data[row][6], data[row][7], data[row][8], data[row][9], minPrice, maxPrice];
 
 				} else {
 					var myStoreProductArray = new Array;
 
-					myStoreProductArray.push(data[row][1]);
+					myStoreProductArray.push(data[row][1] + "(" + data[row][5] + ")");
 					var minPrice,
 					maxPrice,
 					Price;
-					minPrice = 0.00;
+					minPrice = 1000000.00;
 					maxPrice = 0.00;
 					Price = 0.00;
 					if (!isNaN(data[row][2])) {
-						minPrice = data[row][2];
-						maxPrice = data[row][2];
+						minPrice = (data[row][2]).toFixed(2);
+						maxPrice = data[row][2].toFixed(2);
 					}
-					var newArray = [data[row][0], myStoreProductArray, minPrice, data[row][3], minPrice, maxPrice];
+					var newArray = [data[row][0], myStoreProductArray, minPrice, data[row][3], data[row][4], '', data[row][6], data[row][7], data[row][8], data[row][9], minPrice, maxPrice];
 
 					myStoreArray[data[row][3]] = newArray;
 
@@ -531,20 +536,20 @@
 						Duration = durations[Count];
 
 						Price = "$" + myStoreArray[row][2];
-						if (myStoreArray[row][4] != myStoreArray[row][5]) {
+						if (myStoreArray[row][10] != myStoreArray[row][11]) {
 							var minString = "";
 							var maxString = "";
-							if (myStoreArray[row][4] != 0.00) {
-								minString = "$" + myStoreArray[row][4]
+							if (myStoreArray[row][10] != 0.00) {
+								minString = "$" + myStoreArray[row][10]
 							}
-							if (myStoreArray[row][5] != 0.00) {
-								maxString = "$" + myStoreArray[row][5]
+							if (myStoreArray[row][11] != 0.00) {
+								maxString = "$" + myStoreArray[row][11]
 							}
 
 							Price = minString + ".." + maxString;
 						}
 
-						if ((myStoreArray[row][4] == 0.00) && (myStoreArray[row][5] == 0.00)) {
+						if ((myStoreArray[row][10] == 0.00) && (myStoreArray[row][11] == 0.00)) {
 
 							Price = "In Store";
 						}
@@ -553,7 +558,7 @@
 							Product = "Multiple matches of " + $("#text_search").val() + " found";
 						}
 						template = template.concat("<tr>\
-																																																								          <td><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + myStoreArray[row][1] + "\",\"" + Price + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
+																																																								          <td><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + myStoreArray[row][1] + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
 																																																								              <td>" + Product + "</td><td>" + Price + "</td>\
 																																																											  <td>" + Distance + "/" + Duration + "</td>\
 																																																											  </tr>");
@@ -644,13 +649,16 @@
 				var coords = new google.maps.LatLng(latitude, longitude);
 				self.map.panTo(coords);
 				self.addrFromLatLng(coords);
-				self.getgeoCondition($('#search_address').val(), function (geoCondition) {});
+				
 				//self.map.setZoom(this.defaultZoom);
 				prevZoom = this.defaultZoom;
 				jQuery('#map_canvas').append('<div id="myposition"><i class="fontello-target"></i></div>');
 				setTimeout(function () {
 					jQuery('#myposition').remove();
 				}, 3000);
+				setTimeout(function () {
+					self.getgeoCondition($('#search_address').val(), function (geoCondition) {});
+				}, 1000);
 				/*
 				self.currentPinpoint = coords;
 
