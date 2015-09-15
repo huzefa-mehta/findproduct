@@ -67,16 +67,18 @@
 		//self.map.setZoom(this.defaultZoom)
 		//self.setRadius(self.map)
 		google.maps.event.addDomListener(self.map, 'zoom_changed', function () {
-			if (zoomSearchInProgress) {return;}
+			if (zoomSearchInProgress) {
+				return;
+			}
 			zoomSearchInProgress = true;
-			window.setTimeout(function () {
-				//window.alert(self.map.getZoom())
-				//window.alert(this.prevZoom)
-				//window.alert('zoom_changed')
-				self.setRadius(self.map);
-				self.drawSearchRadiusCircle(self.currentPinpoint);
-				self.doSearch();
-			}, 1500);
+			//window.setTimeout(function () {
+			//window.alert(self.map.getZoom())
+			//window.alert(this.prevZoom)
+			//window.alert('zoom_changed')
+			self.setRadius(self.map);
+			self.drawSearchRadiusCircle(self.currentPinpoint);
+			self.doSearch();
+			//}, 1500);
 			zoomSearchInProgress = false;
 		});
 
@@ -100,10 +102,10 @@
 		self.initAutoComplete(self.fusionTableId);
 		self.findMe();
 
-		var searchInProgress = 0;
+		var searchInProgress = false;
 		var prevText = '';
 		var prevAddress = '';
-		var debug = false;
+		var debug = 0;
 
 		//-----end of custom initializers-----
 
@@ -236,10 +238,10 @@
 			callback('');
 		}
 	};
-
+	var searchInProgress = false;
 	MapsLib.prototype.doSearch = function () {
 		var self = this;
-		if (self.searchInProgress == 1) {
+		if (searchInProgress) {
 			return;
 		}
 		//window.alert("doSearch")
@@ -249,8 +251,8 @@
 			self.displayModSearchCount(0);
 			return;
 		}
-
-		self.searchInProgress = 1;
+		//window.alert(searchInProgress);
+		searchInProgress = true;
 		self.clearSearchResultsOnly();
 		var address = $("#search_address").val();
 
@@ -272,7 +274,7 @@
 			self.getList(self.whereClause);
 		});
 		document.getElementById('results_list').style.display = "none";
-		self.searchInProgress = 0;
+		searchInProgress = false;
 	};
 
 	MapsLib.prototype.reset = function () {
@@ -307,11 +309,12 @@
 			}
 		});
 	};
-
+	var debug = false;
 	MapsLib.prototype.drawSearchRadiusCircle = function (point) {
 		var self = this;
 		//return;
-		if (!self.debug) {
+		//window.alert(debug)
+		if (!debug) {
 			return;
 		} else {
 			var circleOptions = {
@@ -468,8 +471,11 @@
 
 				} else {
 					var myStoreProductArray = new Array;
-
-					myStoreProductArray.push(data[row][1] + "(" + data[row][5] + ")");
+					if (data[row][5]) {
+						myStoreProductArray.push(data[row][1] + "(" + data[row][5] + ")");
+					} else {
+						myStoreProductArray.push(data[row][1]);
+					}
 					var minPrice,
 					maxPrice,
 					Price;
@@ -529,7 +535,7 @@
 					var Duration = '';
 					var template = '';
 					template = "<small><table border='\"1\" style=\"width:100%\"'>\
-																																												<strong><th>Store</th><th>Product</th><th>Price</th><th>Dist/Time</th>";
+																																																								<strong><th>Store</th><th>Product</th><th>Price</th><th>Dist/Time</th>";
 					for (var row in myStoreArray) {
 
 						Distance = distances[Count];
@@ -558,10 +564,10 @@
 							Product = "Multiple matches of " + $("#text_search").val() + " found";
 						}
 						template = template.concat("<tr>\
-																																																								          <td><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + myStoreArray[row][1] + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
-																																																								              <td>" + Product + "</td><td>" + Price + "</td>\
-																																																											  <td>" + Distance + "/" + Duration + "</td>\
-																																																											  </tr>");
+																																																																								          <td><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + myStoreArray[row][1] + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
+																																																																								              <td>" + Product + "</td><td>" + Price + "</td>\
+																																																																											  <td>" + Distance + "/" + Duration + "</td>\
+																																																																											  </tr>");
 
 						Count = Count + 1;
 
@@ -649,7 +655,7 @@
 				var coords = new google.maps.LatLng(latitude, longitude);
 				self.map.panTo(coords);
 				self.addrFromLatLng(coords);
-				
+
 				//self.map.setZoom(this.defaultZoom);
 				prevZoom = this.defaultZoom;
 				jQuery('#map_canvas').append('<div id="myposition"><i class="fontello-target"></i></div>');

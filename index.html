@@ -239,17 +239,17 @@ function onDeviceReady() {
 		  var inAddrChange = false;
 		  var prevAddr = '';
 		  function addrChange() {
-		    if (inAddrChange == true) {return;}
+		    if (inAddrChange) {return;}
 			if (prevAddr == $('#search_address').val()) {return;}
 			  inAddrChange = true;
 		      clearTimeout(addrChange.timeout);
 			  //window.alert('addrchange')
 			  
-			  addrChange.timeout = setTimeout(function() {
+			  //addrChange.timeout = setTimeout(function() {
 			  var search_address = $("#search_address").val();
 			     myMap.getgeoCondition(search_address, function() {});
 			     myMap.doSearch();
-			  }, 1500)
+			  //}, 1500)
 			  inAddrChange = false;
 		  }
 		  $('#search_address').on('autocompleteselect', function () {
@@ -265,15 +265,15 @@ function onDeviceReady() {
 		  var inTextChange = false;
 		  var prevText = '';
 		  function textChange() {
-	          if (inTextChange == true) {return;}
+	          if (inTextChange) {return;}
 			  //window.alert('textChange')
 			  if (prevText == $('#text_search').val()) {return;}
 			  prevText = $('#text_search').val();
 			  inTextChange = true;
 		      clearTimeout(textChange.timeout);
-			  textChange.timeout = setTimeout(function() {
+			  //textChange.timeout = setTimeout(function() {
 			     myMap.doSearch();
-			  }, 1500)
+			  //}, 1500)
 			  $('#text_search').autocomplete('close');
 			  inTextChange = false;
 		  }
