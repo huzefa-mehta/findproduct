@@ -176,6 +176,7 @@ function geocodeAddress(geocoder, map, address, store, product, price, phone, we
 			setTimeout(function () { infoWindow.close(); }, 20000);
         //  });
 	  markers.push(marker);
+	  SwapDivsWithClick('results_list')
 	  
     } else {
       alert('Geocode was not successful for the following reason: ' + status);
