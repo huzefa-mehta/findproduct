@@ -14,7 +14,8 @@
     </author>
 
 <!-- <icon src="images/FindProductIcon.png" />  -->
-<icon src="images/icons/ios/Icon.png" />
+<!-- <icon src="images/icons/ios/Icon.png" /> -->
+<icon src="icon.png" />
  <platform name="ios">
               <!-- iOS 8.0+ -->
               <!-- iPhone 6 Plus  -->
