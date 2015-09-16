@@ -13,7 +13,7 @@
         Find Product
     </author>
 
-
+<icon src="images/FindProductIcon.png" />
 <gap:plugin name="org.apache.cordova.geolocation" />
 <gap:plugin name="org.apache.cordova.device" />
 <preference name="permissions" value="none"/>
