@@ -14,6 +14,7 @@
     </author>
 
 <icon src="images/FindProductIcon.png" />
+<preference name="target-device" value="handset" />
 <gap:plugin name="org.apache.cordova.geolocation" />
 <gap:plugin name="org.apache.cordova.device" />
 <preference name="permissions" value="none"/>
