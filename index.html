@@ -166,9 +166,10 @@ function geocodeAddress(geocoder, map, address, store, product, price, phone, we
             infoWindow.setPosition(results[0].geometry.location);
 			var saddr = $('#search_address').val();
 			//var daddr = address.replace(" ", "+");
-			infoWindow.setContent('<small><table style=\"width:200px\"><b><tr><td><a href=\"http://maps.google.com?saddr='+saddr+'&daddr='+address+'\", target=\"_blank\">'+ store + '<br><font size="1">(click for directions)</font></a></b><td>'+ phone +'<br>' + website + '<br>'+ store_type +'</td></tr><tr><td>' + product  + '<br>' + description + '</td><td>' + price + '</td></tr></small></table>');
+			
+			infoWindow.setContent('<small><table style=\"width:200px\"><b><tr><td>' +store_type + '<br><a href=\"http://maps.google.com?saddr='+saddr+'&daddr='+address+'\", target=\"_blank\">'+ store + '<br><font size="1">(click for directions)</font></a></b><br><a href=\"tel:'+ phone +'\">' + phone + '</a><br><a href=\"' + website + '\", target=\"_blank\">'+ website +  '</a></td></tr><tr><td>' + product  + '<br>' + description + '<br>' + price + '</td></tr></small></table>');
          
-            //infoWindow.setContent('<small><table style=\"width:200px\"><b><tr><td><a href=\"http://maps.google.com?q=' + address + '\", target=\"_blank\">'+ store + '<br><font size="1">(click for directions)</font></a></b><td>'+ phone +'<br>' + website + '<br>'+ store_type +'</td></tr><tr><td>' + product  + '<br>' + description + '</td><td>' + price + '</td></tr></small></table>');
+            //infoWindow.setContent('<small><table style=\"width:200px\"><b><tr><td><a href=\"http://maps.google.com?q=' + address + '\", target=\"_blank\">'+ store + '<br><font size="1">(click for directions)</font></a></b><td>'+ phone +'<br><a href=' + website + ', target=\"_blank\">' + website + '</a><br>'+ store_type +'</td></tr><tr><td>' + product  + '<br>' + description + '</td><td>' + price + '</td></tr></small></table>');
             infoWindow.open(map, marker);
 			google.maps.event.addListener(marker, 'click', function() {
                             infoWindow.open(map, marker);

@@ -286,7 +286,7 @@
 	MapsLib.prototype.getInfo = function (callback) {
 		var self = this;
 		jQuery.ajax({
-			url : 'https://www.googleapis.com/fusiontables/v1/tables/' + self.fusionTableId + '?key=' + self.googleApiKey,
+			url : 'https://www.googleapis.com/fusiontables/v2/tables/' + self.fusionTableId + '?key=' + self.googleApiKey,
 			dataType : 'json'
 		}).done(function (response) {
 			if (callback)
@@ -355,7 +355,7 @@
 			queryStr.push(" LIMIT " + query_opts.limit);
 		}
 		var theurl = {
-			base : "https://www.googleapis.com/fusiontables/v1/query?sql=",
+			base : "https://www.googleapis.com/fusiontables/v2/query?sql=",
 			queryStr : queryStr,
 			key : self.googleApiKey
 		};
@@ -424,7 +424,7 @@
 	};
 	MapsLib.prototype.getList = function (whereClause) {
 		var self = this;
-		var selectColumns = "'Store', 'Product', 'Price', 'Location', 'Product Type', 'Quantity', 'Phone', 'Website', 'Store type', 'Product Description'";
+		var selectColumns = "'Store', 'Product', 'Price', 'Location', 'Product Type', 'Quantity', 'Phone', 'Website', 'Store Type', 'Product Description'";
 
 		self.query({
 			select : selectColumns,
@@ -555,24 +555,34 @@
 							Price = minString + ".." + maxString;
 						}
 
-						if ((myStoreArray[row][10] == 0.00) && (myStoreArray[row][11] == 0.00)) {
+						if (((myStoreArray[row][10] == 0.00) && (myStoreArray[row][11] == 0.00)) || (myStoreArray[row][10] == 1000000.00)){
 
 							Price = "In Store";
 						}
 						Product = myStoreArray[row][1];
 						if (myStoreArray[row][1].length != 1) {
 							Product = "Multiple matches of " + $("#text_search").val() + " found";
+							myStoreArray[row][9] = '';
 						}
+						//window.alert(myStoreArray[row][0]);
+						var productStr = String(myStoreArray[row][1]);
+						if (productStr.length > 100) {
+							productStr = productStr.substring(0, 99) + "...";
+							myStoreArray[row][9] = '';
+						} 
+						//window.alert(productStr);
+						//myStoreArray[row][1] = '';
+						
 						template = template.concat("<tr>\
-																																																																								          <td><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + myStoreArray[row][1] + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
+																																																																								          <td>" + myStoreArray[row][8] + "<br><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + productStr + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
 																																																																								              <td>" + Product + "</td><td>" + Price + "</td>\
 																																																																											  <td>" + Distance + "/" + Duration + "</td>\
 																																																																											  </tr>");
-
 						Count = Count + 1;
 
 					}
 					template = template.concat("</table></small>");
+					
 					results.append(template);
 
 					self.displayModSearchCount(Count);
