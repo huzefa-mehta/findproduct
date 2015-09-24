@@ -293,16 +293,20 @@ function onDeviceReady() {
 		  
 		  $('#text_search').on('click, change', function () {
               //window.alert('click_change_text_search')
-              setTimeout(function() {textChange();}, 1500);
+              setTimeout(function() {textChange();}, 3000);
 			  
           });
 		  
 		  $('#text_search').on('blur, change', function () {
 		      //window.alert('blur_change_text_search')
-              setTimeout(function() {textChange();}, 1500);
+              setTimeout(function() {textChange();}, 3000);
           });
 		  
-		 
+		  //$('#text_search').on('autocompletefocus', function (e) {
+		      //e.preventDefault();
+		      //window.alert('autocompleteselect text_search')
+              //textChange();
+          //});
 		  $('#text_search').on('autocompleteselect', function () {
 		      //window.alert('autocompleteselect text_search')
               textChange();
