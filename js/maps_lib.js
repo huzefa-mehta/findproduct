@@ -144,8 +144,60 @@
 		var queryText = encodeURIComponent(
 				"SELECT 'Product', COUNT() " +
 				'FROM ' + tableId + " GROUP BY 'Product'");
+				
 		var query = new google.visualization.Query(
 				'http://www.google.com/fusiontables/gvizdata?tq=' + queryText);
+/*var query = {
+			base : "https://www.googleapis.com/fusiontables/v2/query?sql=",
+			queryStr : queryText,
+			key : self.googleApiKey
+		};
+		var url = ['https://www.googleapis.com/fusiontables/v2/query'];
+        url.push('?sql=' + queryText);
+        url.push('&key=' + self.googleApiKey);*/
+		var queryStr = [];
+		queryStr.push("SELECT 'Product', COUNT() FROM " + tableId + " GROUP BY 'Product'")
+		
+		var theurl = {
+			base : "https://www.googleapis.com/fusiontables/v2/query?sql=",
+			queryStr : queryStr,
+			key : self.googleApiKey
+		};
+		$.ajax({
+			url : [theurl.base, encodeURIComponent(theurl.queryStr.join(" ")), "&key=", theurl.key].join(''),
+			dataType : "json"
+		}).done(function (response) {
+			//var numRows = response.getDataTable().getNumberOfRows();
+			var numRows = response.rows.length;
+
+      // Create the list of results for display of autocomplete.
+      var results = [];
+      for (var i = 0; i < numRows; i++) {
+        results.push(response.rows[i][0]);
+      }
+
+
+			// Create the list of results for display of autocomplete.
+			//var results = [];
+			//for (var i = 0; i < numRows; i++) {
+				//results.push(response.getDataTable().getValue(i, 0));
+			//}
+
+			// Use the results to create the autocomplete options.
+
+			$('#text_search').autocomplete({
+				source : results,
+				minLength : 2,
+				//change: function(e, u) {
+				//textChange2();
+				//}
+			});
+			
+		}).fail(function (response) {
+			self.handleError(response);
+		});
+		
+		/*
 
 		query.send(function (response) {
 			var numRows = response.getDataTable().getNumberOfRows();
@@ -167,6 +219,7 @@
 			});
 
 		});
+		*/
 	}
 
 	MapsLib.prototype.setRadius = function (map) {

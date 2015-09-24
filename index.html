@@ -293,20 +293,23 @@ function onDeviceReady() {
 		  
 		  $('#text_search').on('click, change', function () {
               //window.alert('click_change_text_search')
-              setTimeout(function() {textChange();}, 3000);
+              setTimeout(function() {textChange();}, 500);
 			  
           });
 		  
 		  $('#text_search').on('blur, change', function () {
 		      //window.alert('blur_change_text_search')
-              setTimeout(function() {textChange();}, 3000);
+              setTimeout(function() {textChange();}, 500);
           });
 		  
-		  //$('#text_search').on('autocompletefocus', function (e) {
-		      //e.preventDefault();
+		  $('#text_search').on('autocompletefocus', function (event, ui) {
+		      //window.alert(ui.item.value)
+			  $('#text_search').val(ui.item.value);
+			  
+		      event.preventDefault();
 		      //window.alert('autocompleteselect text_search')
               //textChange();
-          //});
+          });
 		  $('#text_search').on('autocompleteselect', function () {
 		      //window.alert('autocompleteselect text_search')
               textChange();
