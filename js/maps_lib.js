@@ -483,7 +483,7 @@
 					maxPrice = 0.00;
 					Price = 0.00;
 					if (!isNaN(data[row][2])) {
-						minPrice = (data[row][2]).toFixed(2);
+						minPrice = data[row][2].toFixed(2);
 						maxPrice = data[row][2].toFixed(2);
 					}
 					var newArray = [data[row][0], myStoreProductArray, minPrice, data[row][3], data[row][4], '', data[row][6], data[row][7], data[row][8], data[row][9], minPrice, maxPrice];

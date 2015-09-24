@@ -34,12 +34,12 @@
           </button>
           <a class='navbar-brand' href='index.html'>FindProduct</a>
         </div>
-        <div class="navbar-collapse collapse">
+  <!--      <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li class='active'><a href="index.html">Map</a></li>
             <li><a href="about.html">About</a></li>
           </ul>
-        </div><!--/.nav-collapse -->
+        </div>  --> <!--/.nav-collapse -->
       </div>
     </div>
     <div class='container-fluid'>
@@ -201,6 +201,17 @@ function onDeviceReady() {
 
 </script>
 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-2196907-7', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
 
 	
     <script type='text/javascript'>
@@ -282,13 +293,13 @@ function onDeviceReady() {
 		  
 		  $('#text_search').on('click, change', function () {
               //window.alert('click_change_text_search')
-              textChange();
+              setTimeout(function() {textChange();}, 1500);
 			  
           });
 		  
 		  $('#text_search').on('blur, change', function () {
 		      //window.alert('blur_change_text_search')
-              textChange();
+              setTimeout(function() {textChange();}, 1500);
           });
 		  
 		 
@@ -303,6 +314,7 @@ function onDeviceReady() {
 				 if (text_search.length == 1) {
 					myMap.clearSearchResultsOnly();
 			        myMap.displayModSearchCount(0);
+					prevText = '';
 				} else {
 				    return;
 				 }
@@ -335,8 +347,8 @@ function onDeviceReady() {
     </script>
   </body
 <footer>
-  Copyright © 2015 FindProduct. All Rights Reserved.<br>
-  <a href="mailto:info@findproduct.us">
-  info@findproduct.us</a>
+  <small>Copyright © 2015 FindProduct. All Rights Reserved.<br>
+  <a href="tos.html">Terms And Conditions</a>
+  <a href="mailto:info@findproduct.us">Contact Us</a></small>
   </footer>
 </html>
