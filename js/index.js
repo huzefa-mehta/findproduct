@@ -1,4 +1,4 @@
-<script type="text/javascript">
+
 function SwapDivsWithClick(div)
 {
    d = document.getElementById(div);
@@ -12,20 +12,8 @@ function SwapDivsWithClick(div)
       d.style.display = "none";
    }
 }
-</script>
 
-<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/base/jquery-ui.css" type="text/css" />
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"> </script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"> </script>
-	<script async src="https://code.jquery.com/ui/1.10.1/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
-    <script type="text/javascript" src="js/jquery.address.js"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places"></script>
-	<script type="text/javascript" src="phonegap.js"></script>
-    <script type="text/javascript" src="js/maps_lib.js"></script>
-<script>
+
 var markers = [];
 window.markers = markers;
 // Sets the map on all markers in the array.
@@ -106,13 +94,11 @@ function onDeviceReady() {
 }
 
 
-</script>
 
 
 
 
 	
-    <script type='text/javascript'>
 	    google.load('visualization', '1');
       //<![CDATA[
         $(window).resize(function () {
@@ -244,4 +230,3 @@ function onDeviceReady() {
           });
         });
       //]]>
-    </script>
