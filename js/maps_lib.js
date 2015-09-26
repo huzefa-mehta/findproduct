@@ -144,20 +144,20 @@
 		var queryText = encodeURIComponent(
 				"SELECT 'Product', COUNT() " +
 				'FROM ' + tableId + " GROUP BY 'Product'");
-				
+
 		var query = new google.visualization.Query(
 				'http://www.google.com/fusiontables/gvizdata?tq=' + queryText);
-/*var query = {
-			base : "https://www.googleapis.com/fusiontables/v2/query?sql=",
-			queryStr : queryText,
-			key : self.googleApiKey
+		/*var query = {
+		base : "https://www.googleapis.com/fusiontables/v2/query?sql=",
+		queryStr : queryText,
+		key : self.googleApiKey
 		};
 		var url = ['https://www.googleapis.com/fusiontables/v2/query'];
-        url.push('?sql=' + queryText);
-        url.push('&key=' + self.googleApiKey);*/
+		url.push('?sql=' + queryText);
+		url.push('&key=' + self.googleApiKey);*/
 		var queryStr = [];
 		queryStr.push("SELECT 'Product', COUNT() FROM " + tableId + " GROUP BY 'Product'")
-		
+
 		var theurl = {
 			base : "https://www.googleapis.com/fusiontables/v2/query?sql=",
 			queryStr : queryStr,
@@ -170,17 +170,16 @@
 			//var numRows = response.getDataTable().getNumberOfRows();
 			var numRows = response.rows.length;
 
-      // Create the list of results for display of autocomplete.
-      var results = [];
-      for (var i = 0; i < numRows; i++) {
-        results.push(response.rows[i][0]);
-      }
-
+			// Create the list of results for display of autocomplete.
+			var results = [];
+			for (var i = 0; i < numRows; i++) {
+				results.push(response.rows[i][0]);
+			}
 
 			// Create the list of results for display of autocomplete.
 			//var results = [];
 			//for (var i = 0; i < numRows; i++) {
-				//results.push(response.getDataTable().getValue(i, 0));
+			//results.push(response.getDataTable().getValue(i, 0));
 			//}
 
 			// Use the results to create the autocomplete options.
@@ -192,34 +191,34 @@
 				//textChange2();
 				//}
 			});
-			
+
 		}).fail(function (response) {
 			self.handleError(response);
 		});
-		
+
 		/*
 
 		query.send(function (response) {
-			var numRows = response.getDataTable().getNumberOfRows();
+		var numRows = response.getDataTable().getNumberOfRows();
 
-			// Create the list of results for display of autocomplete.
-			var results = [];
-			for (var i = 0; i < numRows; i++) {
-				results.push(response.getDataTable().getValue(i, 0));
-			}
+		// Create the list of results for display of autocomplete.
+		var results = [];
+		for (var i = 0; i < numRows; i++) {
+		results.push(response.getDataTable().getValue(i, 0));
+		}
 
-			// Use the results to create the autocomplete options.
+		// Use the results to create the autocomplete options.
 
-			$('#text_search').autocomplete({
-				source : results,
-				minLength : 2,
-				//change: function(e, u) {
-				//textChange2();
-				//}
-			});
+		$('#text_search').autocomplete({
+		source : results,
+		minLength : 2,
+		//change: function(e, u) {
+		//textChange2();
+		//}
+		});
 
 		});
-		*/
+		 */
 	}
 
 	MapsLib.prototype.setRadius = function (map) {
@@ -256,8 +255,9 @@
 		var self = this;
 		if (address !== "") {
 			if (address.toLowerCase().indexOf(self.locationScope) === -1) {
-				address = address + " " + self.locationScope;
+				//address = address + " " + self.locationScope;
 			}
+			
 			self.geocoder.geocode({
 				'address' : address
 			}, function (results, status) {
@@ -271,6 +271,9 @@
 					//window.alert(self.map.getZoom())
 
 					if (self.addrMarkerImage != '') {
+						if (self.addrMarker) {
+							self.addrMarker.setMap(null);
+						}
 						self.addrMarker = new google.maps.Marker({
 								position : self.currentPinpoint,
 								map : self.map,
@@ -299,6 +302,7 @@
 		}
 		//window.alert("doSearch")
 		var text_search = $("#text_search").val().replace("'", "\\'");
+		
 		if (text_search == '') {
 			self.clearSearchResultsOnly();
 			self.displayModSearchCount(0);
@@ -307,6 +311,7 @@
 		//window.alert(searchInProgress);
 		searchInProgress = true;
 		self.clearSearchResultsOnly();
+		self.displayModSearchCount(0);
 		var address = $("#search_address").val();
 
 		self.setRadius(self.map)
@@ -318,7 +323,6 @@
 			self.whereClause += " AND 'Product' contains ignoring case '" + text_search + "'";
 		else
 			self.whereClause += " AND 'Product'=''";
-
 		//-----end of custom filters-----
 
 		self.getgeoCondition(address, function (geoCondition) {
@@ -412,6 +416,7 @@
 			queryStr : queryStr,
 			key : self.googleApiKey
 		};
+		
 		$.ajax({
 			url : [theurl.base, encodeURIComponent(theurl.queryStr.join(" ")), "&key=", theurl.key].join(''),
 			dataType : "json"
@@ -478,7 +483,7 @@
 	MapsLib.prototype.getList = function (whereClause) {
 		var self = this;
 		var selectColumns = "'Store', 'Product', 'Price', 'Location', 'Product Type', 'Quantity', 'Phone', 'Website', 'Store Type', 'Product Description'";
-
+		
 		self.query({
 			select : selectColumns,
 			where : whereClause
@@ -588,7 +593,7 @@
 					var Duration = '';
 					var template = '';
 					template = "<small><table border='\"1\" style=\"width:100%\"'>\
-																																																								<strong><th>Store</th><th>Product</th><th>Price</th><th>Dist/Time</th>";
+																																																														<strong><th>Store</th><th>Product</th><th>Price</th><th>Dist/Time</th>";
 					for (var row in myStoreArray) {
 
 						Distance = distances[Count];
@@ -608,7 +613,7 @@
 							Price = minString + ".." + maxString;
 						}
 
-						if (((myStoreArray[row][10] == 0.00) && (myStoreArray[row][11] == 0.00)) || (myStoreArray[row][10] == 1000000.00)){
+						if (((myStoreArray[row][10] == 0.00) && (myStoreArray[row][11] == 0.00)) || (myStoreArray[row][10] == 1000000.00)) {
 
 							Price = "In Store";
 						}
@@ -622,20 +627,20 @@
 						if (productStr.length > 100) {
 							productStr = productStr.substring(0, 99) + "...";
 							myStoreArray[row][9] = '';
-						} 
+						}
 						//window.alert(productStr);
 						//myStoreArray[row][1] = '';
-						
+
 						template = template.concat("<tr>\
-																																																																								          <td>" + myStoreArray[row][8] + "<br><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + productStr + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
-																																																																								              <td>" + Product + "</td><td>" + Price + "</td>\
-																																																																											  <td>" + Distance + "/" + Duration + "</td>\
-																																																																											  </tr>");
+																																																																																          <td>" + myStoreArray[row][8] + "<br><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + productStr + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
+																																																																																              <td>" + Product + "</td><td>" + Price + "</td>\
+																																																																																			  <td>" + Distance + "/" + Duration + "</td>\
+																																																																																			  </tr>");
 						Count = Count + 1;
 
 					}
 					template = template.concat("</table></small>");
-					
+
 					results.append(template);
 
 					self.displayModSearchCount(Count);
@@ -727,7 +732,11 @@
 				}, 3000);
 				setTimeout(function () {
 					self.getgeoCondition($('#search_address').val(), function (geoCondition) {});
+					self.doSearch();
 				}, 1000);
+				//self.clearSearchResultsOnly();
+			    //self.displayModSearchCount(0);
+				
 				/*
 				self.currentPinpoint = coords;
 
