@@ -59,7 +59,7 @@ function geocodeAddress(geocoder, map, address, store, product, price, phone, we
 			var saddr = $('#search_address').val();
 			
 
-			infoWindow.setContent('<small><table style=\"width:250px\"><b><tr><td>' + store_type + '<br><a href=\"http://maps.google.com?saddr=' + saddr + '&daddr=' + address + '\", target=\"_blank\" onClick=\"ga(\'send\',\'event\',\'link\',\'directions\',\''+address+'\')\">' + store + '<br><font size="1">(click for directions)</font></a></b><br><a href=\"tel:' + phone + '\" onClick=\"ga(\'send\',\'event\',\'link\',\'phone\',' + this.href + ')\">' + phone + '</a><br><a href=\"' + website + '\", target=\"_blank\">' + website + '</a></td></tr><tr><td>' + product + '<br>' + description + '<br>' + price + '</td></tr></small></table>');
+			infoWindow.setContent('<small><table style=\"width:250px\"><b><tr><td>' + store_type + '<br><a href=\"http://maps.google.com?saddr=' + saddr + '&daddr=' + address + '\", target=\"_blank\" onClick=\"ga(\'send\',\'event\',\'link\',\'directions_to_store\',\''+store+' '+address+'\')\">' + store + '<br><font size="1">(click for directions)</font></a></b><br><a href=\"tel:' + phone + '\" onClick=\"ga(\'send\',\'event\',\'link\',\'phone\',\'' + store + ' ' + phone + '\')\">' + phone + '</a><br><a href=\"' + website + '\", target=\"_blank\">' + website + '</a></td></tr><tr><td>' + product + '<br>' + description + '<br>' + price + '</td></tr></small></table>');
 
 			infoWindow.open(map, marker);
 			google.maps.event.addListener(marker, 'click', function () {
