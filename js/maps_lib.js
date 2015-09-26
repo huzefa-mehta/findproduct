@@ -257,7 +257,7 @@
 			if (address.toLowerCase().indexOf(self.locationScope) === -1) {
 				//address = address + " " + self.locationScope;
 			}
-			
+
 			self.geocoder.geocode({
 				'address' : address
 			}, function (results, status) {
@@ -302,7 +302,7 @@
 		}
 		//window.alert("doSearch")
 		var text_search = $("#text_search").val().replace("'", "\\'");
-		
+
 		if (text_search == '') {
 			self.clearSearchResultsOnly();
 			self.displayModSearchCount(0);
@@ -313,6 +313,8 @@
 		self.clearSearchResultsOnly();
 		self.displayModSearchCount(0);
 		var address = $("#search_address").val();
+		var analytic_address_product = text_search + " from " + address;
+		ga('send', 'event', 'search', 'product_from_address', analytic_address_product);
 
 		self.setRadius(self.map)
 		self.whereClause = self.locationColumn + " not equal to ''";
@@ -416,7 +418,7 @@
 			queryStr : queryStr,
 			key : self.googleApiKey
 		};
-		
+
 		$.ajax({
 			url : [theurl.base, encodeURIComponent(theurl.queryStr.join(" ")), "&key=", theurl.key].join(''),
 			dataType : "json"
@@ -483,7 +485,7 @@
 	MapsLib.prototype.getList = function (whereClause) {
 		var self = this;
 		var selectColumns = "'Store', 'Product', 'Price', 'Location', 'Product Type', 'Quantity', 'Phone', 'Website', 'Store Type', 'Product Description'";
-		
+
 		self.query({
 			select : selectColumns,
 			where : whereClause
@@ -593,7 +595,7 @@
 					var Duration = '';
 					var template = '';
 					template = "<small><table border='\"1\" style=\"width:100%\"'>\
-																																																														<strong><th>Store</th><th>Product</th><th>Price</th><th>Dist/Time</th>";
+																																																																				<strong><th>Store</th><th>Product</th><th>Price</th><th>Dist/Time</th>";
 					for (var row in myStoreArray) {
 
 						Distance = distances[Count];
@@ -632,10 +634,10 @@
 						//myStoreArray[row][1] = '';
 
 						template = template.concat("<tr>\
-																																																																																          <td>" + myStoreArray[row][8] + "<br><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + productStr + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
-																																																																																              <td>" + Product + "</td><td>" + Price + "</td>\
-																																																																																			  <td>" + Distance + "/" + Duration + "</td>\
-																																																																																			  </tr>");
+																																																																																								          <td>" + myStoreArray[row][8] + "<br><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + productStr + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
+																																																																																								              <td>" + Product + "</td><td>" + Price + "</td>\
+																																																																																											  <td>" + Distance + "/" + Duration + "</td>\
+																																																																																											  </tr>");
 						Count = Count + 1;
 
 					}
@@ -732,11 +734,12 @@
 				}, 3000);
 				setTimeout(function () {
 					self.getgeoCondition($('#search_address').val(), function (geoCondition) {});
+					ga('send', 'event', 'link', 'address', $('#search_address').val());
 					self.doSearch();
 				}, 1000);
 				//self.clearSearchResultsOnly();
-			    //self.displayModSearchCount(0);
-				
+				//self.displayModSearchCount(0);
+
 				/*
 				self.currentPinpoint = coords;
 
