@@ -6,7 +6,7 @@
 
 		this.recordName = options.recordName || "result"; //for showing a count of results
 		this.recordNamePlural = options.recordNamePlural || "results";
-		this.searchRadius = options.searchRadius || 5000; //in meters ~ 1/2 mile
+		this.searchRadius = options.searchRadius || 3000; //in meters ~ 1/2 mile
 
 		// the encrypted Table ID of your Fusion Table (found under File => About)
 		this.fusionTableId = options.fusionTableId || "",
@@ -64,21 +64,17 @@
 		this.prevZoom = this.defaultZoom;
 		var zoomSearchInProgress;
 		zoomSearchInProgress = false;
-		//self.map.setZoom(this.defaultZoom)
-		//self.setRadius(self.map)
+
 		google.maps.event.addDomListener(self.map, 'zoom_changed', function () {
 			if (zoomSearchInProgress) {
 				return;
 			}
 			zoomSearchInProgress = true;
-			//window.setTimeout(function () {
-			//window.alert(self.map.getZoom())
-			//window.alert(this.prevZoom)
-			//window.alert('zoom_changed')
+
 			self.setRadius(self.map);
 			self.drawSearchRadiusCircle(self.currentPinpoint);
 			self.doSearch();
-			//}, 1500);
+
 			zoomSearchInProgress = false;
 		});
 
@@ -86,14 +82,7 @@
 
 		//reset filters
 		$("#search_address").val(self.convertToPlainString($.address.parameter('address')));
-		/*
-		var loadRadius = self.convertToPlainString($.address.parameter('radius'));
-		if (loadRadius != "")
-		$("#search_radius").val(loadRadius);
-		else
-		$("#search_radius").val(self.searchRadius);
-
-		$(":checkbox").prop("checked", "checked");*/
+		
 		$("#result_box").hide();
 
 		//-----custom initializers-----
@@ -105,7 +94,7 @@
 		var searchInProgress = false;
 		var prevText = '';
 		var prevAddress = '';
-		var debug = 0;
+		//var debug = 1;
 
 		//-----end of custom initializers-----
 
@@ -223,33 +212,33 @@
 
 	MapsLib.prototype.setRadius = function (map) {
 		var self = this;
-		self.searchRadius = 5000;
+		self.searchRadius = 3000;
 		if (map.getZoom() == 4)
-			self.searchRadius = 256000;
+			self.searchRadius = 1536000;
 		else if (map.getZoom() == 5)
-			self.searchRadius = 128000;
+			self.searchRadius = 768000;
 		else if (map.getZoom() == 6)
-			self.searchRadius = 640000;
+			self.searchRadius = 384000;
 		else if (map.getZoom() == 7)
-			self.searchRadius = 320000;
+			self.searchRadius = 192000;
 		else if (map.getZoom() == 8)
-			self.searchRadius = 160000;
+			self.searchRadius = 96000;
 		else if (map.getZoom() == 9)
-			self.searchRadius = 80000;
+			self.searchRadius = 48000;
 		else if (map.getZoom() == 10)
-			self.searchRadius = 40000;
+			self.searchRadius = 24000;
 		else if (map.getZoom() == 11)
-			self.searchRadius = 20000;
+			self.searchRadius = 12000;
 		else if (map.getZoom() == 12)
-			self.searchRadius = 10000;
+			self.searchRadius = 6000;
 		else if (map.getZoom() == 13)
-			self.searchRadius = 5000;
+			self.searchRadius = 3000;
 		else if (map.getZoom() == 14)
-			self.searchRadius = 2500;
+			self.searchRadius = 1500;
 		else if (map.getZoom() == 15)
-			self.searchRadius = 1250;
+			self.searchRadius = 750;
 		else if (map.getZoom() == 16)
-			self.searchRadius = 625;
+			self.searchRadius = 375;
 	}
 	MapsLib.prototype.getgeoCondition = function (address, callback) {
 		var self = this;
@@ -268,8 +257,7 @@
 					$.address.parameter('address', encodeURIComponent(address));
 					//$.address.parameter('radius', encodeURIComponent(self.searchRadius));
 					map.setCenter(self.currentPinpoint);
-					//window.alert(self.map.getZoom())
-
+					
 					if (self.addrMarkerImage != '') {
 						if (self.addrMarker) {
 							self.addrMarker.setMap(null);
@@ -371,25 +359,23 @@
 	var debug = false;
 	MapsLib.prototype.drawSearchRadiusCircle = function (point) {
 		var self = this;
-		//return;
-		//window.alert(debug)
 		if (!debug) {
 			return;
-		} else {
-			var circleOptions = {
-				strokeColor : "#4b58a6",
-				strokeOpacity : 0.3,
-				strokeWeight : 1,
-				fillColor : "#4b58a6",
-				fillOpacity : 0.05,
-				map : self.map,
-				center : point,
-				clickable : false,
-				zIndex : -1,
-				radius : parseInt(self.searchRadius)
-			};
-			self.searchRadiusCircle = new google.maps.Circle(circleOptions);
 		}
+		var circleOptions = {
+			strokeColor : "#4b58a6",
+			strokeOpacity : 0.3,
+			strokeWeight : 1,
+			fillColor : "#4b58a6",
+			fillOpacity : 0.05,
+			map : self.map,
+			center : point,
+			clickable : false,
+			zIndex : -1,
+			radius : parseInt(self.searchRadius)
+		};
+		self.searchRadiusCircle = new google.maps.Circle(circleOptions);
+
 	};
 
 	MapsLib.prototype.query = function (query_opts, callback) {
@@ -511,12 +497,12 @@
 			self.displayModSearchCount(0);
 			results.hide();
 		} else {
-			//window.alert('displayList')
+			
 			var myStoreArray = {};
 
 			for (var row in data) {
 				if (myStoreArray[data[row][3]]) {
-					//var myStoreArrayLoc = myStoreArray[data[row][3]];
+					
 					var myStoreProductArray = new Array;
 					myStoreProductArray.push(myStoreArray[data[row][3]][1]);
 					myStoreProductArray.push(data[row][1]);
@@ -595,7 +581,7 @@
 					var Duration = '';
 					var template = '';
 					template = "<small><table border='\"1\" style=\"width:100%\"'>\
-																																																																				<strong><th>Store</th><th>Product</th><th>Price</th><th>Dist/Time</th>";
+																																																																																																		<strong><th>Store</th><th>Product</th><th>Price</th><th>Dist/Time</th>";
 					for (var row in myStoreArray) {
 
 						Distance = distances[Count];
@@ -624,20 +610,18 @@
 							Product = "Multiple matches of " + $("#text_search").val() + " found";
 							myStoreArray[row][9] = '';
 						}
-						//window.alert(myStoreArray[row][0]);
+						
 						var productStr = String(myStoreArray[row][1]);
 						if (productStr.length > 100) {
 							productStr = productStr.substring(0, 99) + "...";
 							myStoreArray[row][9] = '';
 						}
-						//window.alert(productStr);
-						//myStoreArray[row][1] = '';
+						
 
-						template = template.concat("<tr>\
-																																																																																								          <td>" + myStoreArray[row][8] + "<br><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + productStr + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
-																																																																																								              <td>" + Product + "</td><td>" + Price + "</td>\
-																																																																																											  <td>" + Distance + "/" + Duration + "</td>\
-																																																																																											  </tr>");
+						template = template.concat("<tr><td>" + myStoreArray[row][8] + "<br><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + productStr + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
+																																																																																																							<td>" + Product + "</td><td>" + Price + "</td>\
+																																																																																																							<td>" + Distance + "/" + Duration + "</td>\
+																																																																																																							</tr>");
 						Count = Count + 1;
 
 					}
@@ -719,6 +703,7 @@
 		var foundLocation;
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(function (position) {
+			//navigator.geolocation.watchPosition(function (position) {
 				var latitude = position.coords.latitude;
 				var longitude = position.coords.longitude;
 				var accuracy = position.coords.accuracy;
@@ -726,7 +711,7 @@
 				self.map.panTo(coords);
 				self.addrFromLatLng(coords);
 
-				//self.map.setZoom(this.defaultZoom);
+				
 				prevZoom = this.defaultZoom;
 				jQuery('#map_canvas').append('<div id="myposition"><i class="fontello-target"></i></div>');
 				setTimeout(function () {
@@ -737,21 +722,6 @@
 					ga('send', 'event', 'link', 'address', $('#search_address').val());
 					self.doSearch();
 				}, 1000);
-				//self.clearSearchResultsOnly();
-				//self.displayModSearchCount(0);
-
-				/*
-				self.currentPinpoint = coords;
-
-				if (self.addrMarkerImage != '') {
-				self.addrMarker = new google.maps.Marker({
-				position : self.currentPinpoint,
-				map : self.map,
-				icon : self.addrMarkerImage,
-				animation : google.maps.Animation.DROP,
-				title : $('#search_address').val()
-				});
-				}*/
 
 			}, function error(msg) {
 				alert('Please enable your GPS position.');
