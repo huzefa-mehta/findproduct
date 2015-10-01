@@ -288,7 +288,7 @@
 		if (searchInProgress) {
 			return;
 		}
-		
+		//window.alert("doSearch")
 		var text_search = $("#text_search").val().replace("'", "\\'");
 
 		if (text_search == '') {
@@ -296,10 +296,10 @@
 			self.displayModSearchCount(0);
 			return;
 		}
-		
+		//window.alert(searchInProgress);
 		searchInProgress = true;
 		self.clearSearchResultsOnly();
-		//self.displayModSearchCount(0);
+		self.displayModSearchCount(0);
 		var address = $("#search_address").val();
 		var analytic_address_product = text_search + " from " + address;
 		ga('send', 'event', 'search', 'product_from_address', analytic_address_product);
@@ -467,21 +467,13 @@
 		if (numRows == 1) {
 			name = self.recordName;
 		}
-		d = document.getElementById('results_list');
-
-	
 		$("#result_box").fadeOut(function () {
 			//$("#result_count").html(self.addCommas(numRows) + " " + name + " found");
 			if (numRows != 0) {
-				if (d.style.display == "none") {
-				$("#result_count").html(self.addCommas(numRows) + " " + name + " found<br><small>(Click to see details)</small>");
-				} else {
-					$("#result_count").html(self.addCommas(numRows) + " " + name + " found<br><small>(Click to hide details)</small>");
-				
-				}
+				$("#result_count").html(self.addCommas(numRows) + " " + name + " found");
 			} else {
 				if ($("#text_search").val() != '') {
-					$("#result_count").html(self.addCommas(numRows) + " " + name + " found<br><small>(Zoom out to search more stores)</small>");
+					$("#result_count").html(self.addCommas(numRows) + " " + name + " found<br><small>Zoom out to search more products</small>");
 				} else {
 					$("#result_count").html(self.addCommas(numRows) + " " + name + " found");
 				}
@@ -608,7 +600,7 @@
 					var Duration = '';
 					var template = '';
 					template = "<small><table border='\"1\" style=\"width:100%\"'>\
-																																																																																																		<strong><th>Store<br><small>(Click store link for details)</small></th><th>Product</th><th>Price</th><th>Dist/Time</th>";
+																																																																																																		<strong><th>Store</th><th>Product</th><th>Price</th><th>Dist/Time</th>";
 					for (var row in myStoreArray) {
 
 						Distance = distances[Count];

@@ -1,10 +1,12 @@
 
 function SwapDivsWithClick(div) {
 	d = document.getElementById(div);
-
+	d1 = document.getElementById('result_box');
 	if (d.style.display == "none") {
+		d1.innerHTML = d1.innerHTML.replace("see", "hide");
 		d.style.display = "block";
 	} else {
+		d1.innerHTML = d1.innerHTML.replace("hide", "see");
 		d.style.display = "none";
 	}
 }
@@ -54,12 +56,11 @@ function geocodeAddress(geocoder, map, address, store, product, price, phone, we
 					map : map,
 					position : results[0].geometry.location
 				});
-			
+
 			infoWindow.setPosition(results[0].geometry.location);
 			var saddr = $('#search_address').val();
-			
 
-			infoWindow.setContent('<small><table style=\"width:250px\"><b><tr><td>' + store_type + '<br><a href=\"http://maps.google.com?saddr=' + saddr + '&daddr=' + address + '\", target=\"_blank\" onClick=\"ga(\'send\',\'event\',\'link\',\'directions_to_store\',\''+store+' '+address+'\')\">' + store + '<br><font size="1">(click for directions)</font></a></b><br><a href=\"tel:' + phone + '\" onClick=\"ga(\'send\',\'event\',\'link\',\'phone_to_store\',\'' + store + ' ' + phone + '\')\">' + phone + '</a><br><a href=\"' + website + '\", target=\"_blank\">' + website + '</a></td></tr><tr><td>' + product + '<br>' + description + '<br>' + price + '</td></tr></small></table>');
+			infoWindow.setContent('<small><table style=\"width:250px\"><b><tr><td>' + store_type + '<br><a href=\"http://maps.google.com?saddr=' + saddr + '&daddr=' + address + '\", target=\"_blank\" onClick=\"ga(\'send\',\'event\',\'link\',\'directions_to_store\',\'' + store + ' ' + address + '\')\">' + store + '<br><font size="1">(click for directions)</font></a></b><br><a href=\"tel:' + phone + '\" onClick=\"ga(\'send\',\'event\',\'link\',\'phone_to_store\',\'' + store + ' ' + phone + '\')\">' + phone + '</a><br><a href=\"' + website + '\", target=\"_blank\">' + website + '</a></td></tr><tr><td>' + product + '<br>' + description + '<br>' + price + '</td></tr></small></table>');
 
 			infoWindow.open(map, marker);
 			google.maps.event.addListener(marker, 'click', function () {
@@ -86,7 +87,7 @@ function onDeviceReady() {
 	//navigator.geolocation.getCurrentPosition(disp);
 }
 
-google.load('visualization', '1');
+//google.load('visualization', '1');
 //<![CDATA[
 $(window).resize(function () {
 	var h = $(window).height(),
@@ -130,27 +131,36 @@ $(function () {
 
 		var search_address = $("#search_address").val();
 		myMap.getgeoCondition(search_address, function () {});
-		myMap.doSearch();
+		$("#text_search").val("");
+		myMap.clearSearchResultsOnly();
+		myMap.displayModSearchCount(0);
+		//myMap.doSearch();
 		inAddrChange = false;
 	}
 	$('#search_address').on('autocompleteselect', function () {
 		addrChange();
 	});
-	$('#search_address').on('click, change', function () {
+	$('#search_address').on('click change blur', function () {
 		setTimeout(function () {
 			addrChange();
 		}, 500);
 	});
 
-	$('#search_address').on('blur, change', function () {
-		setTimeout(function () {
-			addrChange();
-		}, 500);
-	});
+	//$('#search_address').on('blur, change', function () {
+	//setTimeout(function () {
+	//addrChange();
+	//}, 500);
+	//});
 	$('#search_address').on('autocompletefocus', function (event, ui) {
 		$('#search_address').val(ui.item.value);
 
 		event.preventDefault();
+	});
+	$("#search_address").on('keydown', function (e) {
+		var key = e.keyCode ? e.keyCode : e.which;
+		if (key == 13) {
+			addrChange();
+		}
 	});
 	var inTextChange = false;
 	var prevText = '';
@@ -170,18 +180,21 @@ $(function () {
 		inTextChange = false;
 	}
 
-	$('#text_search').on('click, change', function () {
-		setTimeout(function () {
-			textChange();
-		}, 500);
-
-	});
-
-	$('#text_search').on('blur, change', function () {
+	$('#text_search').on('click change blur', function () {
 		setTimeout(function () {
 			textChange();
 		}, 500);
 	});
+	
+	//$('#text_search').textinput('create', function() {
+      // textChange();
+    //});
+
+	//$('#text_search').on('blur, change', function () {
+	//setTimeout(function () {
+	//textChange();
+	//}, 500);
+	//});
 
 	$('#text_search').on('autocompletefocus', function (event, ui) {
 		$('#text_search').val(ui.item.value);
@@ -193,6 +206,9 @@ $(function () {
 	});
 	$("#text_search").on('keydown', function (e) {
 		var key = e.keyCode ? e.keyCode : e.which;
+		if (key == 13) {
+			textChange();
+		}
 		if ((key === 46) || (key == 8)) {
 			var text_search = $("#text_search").val().replace("'", "\\'");
 			if (text_search.length == 1) {
