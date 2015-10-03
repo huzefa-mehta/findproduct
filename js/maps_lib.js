@@ -9,11 +9,11 @@
 		this.searchRadius = options.searchRadius || 12000; //in meters ~ 1/2 mile
 
 		// the encrypted Table ID of your Fusion Table (found under File => About)
-		this.fusionTableId = options.fusionTableId || "",
+		this.fusionTableId = options.fusionTableId || "";
 
 		// Found at https://console.developers.google.com/
 		// Important! this key is for demonstration purposes. please register your own.
-		this.googleApiKey = options.googleApiKey || "",
+		this.googleApiKey = options.googleApiKey || "";
 
 		// name of the location column in your Fusion Table.
 		// NOTE: if your location column name has spaces in it, surround it with single quotes
@@ -31,14 +31,16 @@
 
 		// marker image for your searched address
 		if (typeof options.addrMarkerImage !== 'undefined') {
-			if (options.addrMarkerImage != "")
+			if (options.addrMarkerImage != "") {
 				this.addrMarkerImage = options.addrMarkerImage;
-			else
-				this.addrMarkerImage = ""
-		} else
-			this.addrMarkerImage = "images/blue-pushpin.png"
+			} else {
+				this.addrMarkerImage = "";
+			}
+		} else {
+			this.addrMarkerImage = "images/blue-pushpin.png";
+		}
 
-				this.currentPinpoint = google.maps.LatLng(options.map_center[0], options.map_center[1]);
+		this.currentPinpoint = google.maps.LatLng(options.map_center[0], options.map_center[1]);
 		this.drawSearchRadiusCircle(self.currentPinpoint);
 		$("#result_count").html("");
 
@@ -60,10 +62,8 @@
 		google.maps.event.addDomListener(window, 'resize', function () {
 			self.map.setCenter(self.map_centroid);
 		});
-		var prevZoom;
-		this.prevZoom = this.defaultZoom;
-		var zoomSearchInProgress;
-		zoomSearchInProgress = false;
+		var prevZoom = this.defaultZoom;
+		var zoomSearchInProgress = false;
 
 		google.maps.event.addDomListener(self.map, 'zoom_changed', function () {
 			if (zoomSearchInProgress) {
@@ -82,7 +82,7 @@
 
 		//reset filters
 		$("#search_address").val(self.convertToPlainString($.address.parameter('address')));
-		
+
 		$("#result_box").hide();
 
 		//-----custom initializers-----
@@ -94,7 +94,6 @@
 		var searchInProgress = false;
 		var prevText = '';
 		var prevAddress = '';
-		//var debug = 1;
 
 		//-----end of custom initializers-----
 
@@ -134,16 +133,7 @@
 				"SELECT 'Product', COUNT() " +
 				'FROM ' + tableId + " GROUP BY 'Product'");
 
-		//var query = new google.visualization.Query(
-				//'http://www.google.com/fusiontables/gvizdata?tq=' + queryText);
-		/*var query = {
-		base : "https://www.googleapis.com/fusiontables/v2/query?sql=",
-		queryStr : queryText,
-		key : self.googleApiKey
-		};
-		var url = ['https://www.googleapis.com/fusiontables/v2/query'];
-		url.push('?sql=' + queryText);
-		url.push('&key=' + self.googleApiKey);*/
+		
 		var queryStr = [];
 		queryStr.push("SELECT 'Product', COUNT() FROM " + tableId + " GROUP BY 'Product'")
 
@@ -156,7 +146,7 @@
 			url : [theurl.base, encodeURIComponent(theurl.queryStr.join(" ")), "&key=", theurl.key].join(''),
 			dataType : "json"
 		}).done(function (response) {
-			//var numRows = response.getDataTable().getNumberOfRows();
+
 			var numRows = response.rows.length;
 
 			// Create the list of results for display of autocomplete.
@@ -164,12 +154,6 @@
 			for (var i = 0; i < numRows; i++) {
 				results.push(response.rows[i][0]);
 			}
-
-			// Create the list of results for display of autocomplete.
-			//var results = [];
-			//for (var i = 0; i < numRows; i++) {
-			//results.push(response.getDataTable().getValue(i, 0));
-			//}
 
 			// Use the results to create the autocomplete options.
 
@@ -185,29 +169,6 @@
 			self.handleError(response);
 		});
 
-		/*
-
-		query.send(function (response) {
-		var numRows = response.getDataTable().getNumberOfRows();
-
-		// Create the list of results for display of autocomplete.
-		var results = [];
-		for (var i = 0; i < numRows; i++) {
-		results.push(response.getDataTable().getValue(i, 0));
-		}
-
-		// Use the results to create the autocomplete options.
-
-		$('#text_search').autocomplete({
-		source : results,
-		minLength : 2,
-		//change: function(e, u) {
-		//textChange2();
-		//}
-		});
-
-		});
-		 */
 	}
 
 	MapsLib.prototype.setRadius = function (map) {
@@ -257,7 +218,7 @@
 					$.address.parameter('address', encodeURIComponent(address));
 					//$.address.parameter('radius', encodeURIComponent(self.searchRadius));
 					map.setCenter(self.currentPinpoint);
-					
+
 					if (self.addrMarkerImage != '') {
 						if (self.addrMarker) {
 							self.addrMarker.setMap(null);
@@ -288,7 +249,7 @@
 		if (searchInProgress) {
 			return;
 		}
-		
+
 		var text_search = $("#text_search").val().replace("'", "\\'");
 
 		if (text_search == '') {
@@ -296,7 +257,7 @@
 			self.displayModSearchCount(0);
 			return;
 		}
-		
+
 		searchInProgress = true;
 		self.clearSearchResultsOnly();
 		//self.displayModSearchCount(0);
@@ -419,7 +380,9 @@
 
 	MapsLib.prototype.handleError = function (json) {
 		if (json.error !== undefined) {
-			if (json.responseJSON === undefined) {return;}
+			if (json.responseJSON === undefined) {
+				return;
+			}
 			var error = json.responseJSON.error.errors;
 			console.log("Error in Fusion Table call!");
 			for (var row in error) {
@@ -469,15 +432,14 @@
 		}
 		d = document.getElementById('results_list');
 
-	
 		$("#result_box").fadeOut(function () {
 			//$("#result_count").html(self.addCommas(numRows) + " " + name + " found");
 			if (numRows != 0) {
 				if (d.style.display == "none") {
-				$("#result_count").html(self.addCommas(numRows) + " " + name + " found<br><small>(Click to see details)</small>");
+					$("#result_count").html(self.addCommas(numRows) + " " + name + " found<br><small>(Click to see details)</small>");
 				} else {
 					$("#result_count").html(self.addCommas(numRows) + " " + name + " found<br><small>(Click to hide details)</small>");
-				
+
 				}
 			} else {
 				if ($("#text_search").val() != '') {
@@ -522,12 +484,12 @@
 			self.displayModSearchCount(0);
 			results.hide();
 		} else {
-			
+
 			var myStoreArray = {};
 
 			for (var row in data) {
 				if (myStoreArray[data[row][3]]) {
-					
+
 					var myStoreProductArray = new Array;
 					myStoreProductArray.push(myStoreArray[data[row][3]][1]);
 					myStoreProductArray.push(data[row][1]);
@@ -608,7 +570,7 @@
 					var Duration = '';
 					var template = '';
 					template = "<small><table border='\"1\" style=\"width:100%\"'>\
-																																																																																																		<strong><th>Store<br><small>(Click store link for details)</small></th><th>Product</th><th>Price</th><th>Dist/Time</th>";
+																																																																																																														<strong><th>Store<br><small>(Click store link for details)</small></th><th>Product</th><th>Price</th><th>Dist/Time</th>";
 					for (var row in myStoreArray) {
 
 						Distance = distances[Count];
@@ -637,18 +599,17 @@
 							Product = "Multiple matches of " + $("#text_search").val() + " found";
 							myStoreArray[row][9] = '';
 						}
-						
+
 						var productStr = String(myStoreArray[row][1]);
 						if (productStr.length > 100) {
 							productStr = productStr.substring(0, 99) + "...";
 							myStoreArray[row][9] = '';
 						}
-						
 
 						template = template.concat("<tr><td>" + myStoreArray[row][8] + "<br><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + productStr + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
-																																																																																																							<td>" + Product + "</td><td>" + Price + "</td>\
-																																																																																																							<td>" + Distance + "/" + Duration + "</td>\
-																																																																																																							</tr>");
+																																																																																																																							<td>" + Product + "</td><td>" + Price + "</td>\
+																																																																																																																							<td>" + Distance + "/" + Duration + "</td>\
+																																																																																																																							</tr>");
 						Count = Count + 1;
 
 					}
@@ -730,7 +691,7 @@
 		var foundLocation;
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(function (position) {
-			//navigator.geolocation.watchPosition(function (position) {
+				//navigator.geolocation.watchPosition(function (position) {
 				var latitude = position.coords.latitude;
 				var longitude = position.coords.longitude;
 				var accuracy = position.coords.accuracy;
@@ -738,7 +699,6 @@
 				self.map.panTo(coords);
 				self.addrFromLatLng(coords);
 
-				
 				prevZoom = this.defaultZoom;
 				jQuery('#map_canvas').append('<div id="myposition"><i class="fontello-target"></i></div>');
 				setTimeout(function () {

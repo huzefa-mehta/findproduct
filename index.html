@@ -7,12 +7,33 @@
     <meta content='' name='description' />
     <meta content='' name='author' />
     <!-- Styles -->
-    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+  <!--  <link rel="stylesheet" href="css/bootstrap.min.css"/>-->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/custom.css"/>
 	<style>
     	th, td {
         padding: 2px;
         }
+		#banner {
+		    top:0;
+			bottom:0;
+			border: 0px;
+		    margin: 0px;
+		    padding: 0px;
+			height: 0px;
+            position: relative;
+		}
+		.textItem {
+		    text-align: center;
+			top:0;
+			bottom:0;
+			left: 45px;
+			font-size: 20px;
+		    color: orange;
+			
+            position: absolute;
+            display: none;
+		}
 	</style>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -44,7 +65,7 @@
            <span class="icon-bar"></span>
 		   <span class="icon-bar"></span>
           </button>
-          <a class='navbar-brand' href='index.html'><img src="images/icon.png" alt='FindProduct' height="20" width="20"><font style="color:black"> FindProduct<br><p style="font-size:10px">Search In Bay Area Indian Restaurants and Grocery Stores</p></a>
+          <a class='navbar-brand' href='index.html'><!--<img src="images/icon.png" alt='FindProduct' height="20" width="20">--><font style="color:black"> FindProduct<p style="font-size:10px">Search In Bay Area Indian Restaurants and Grocery Stores</p></font></a>
         </div>
        <!-- <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -55,6 +76,17 @@
       </div>
     </div>
     <div class='container-fluid'>
+		<div class='row'>
+			<div class='col-md-12' id="banner">
+				<div class="textItem">Come Find The Flavors Of India</div>
+				<div class="textItem"><font style="color:black">Search Pani Puri</font></div>
+				<div class="textItem"><font style="color:green">Spice Valley</font></div>
+				<div class="textItem">Search Ragda Pattice</div>
+				<div class="textItem"><font style="color:black">Lakshmi Bazaar</font></div>
+				<div class="textItem"><font style="color:green">Search Coconut Cookies</font></div>
+				<div class="textItem">Bharat Bazaar</div>
+			</div>
+		</div>
       <div class='row'>
         <div class='col-md-4'>
           <div class='well'>
@@ -100,8 +132,8 @@
         </div>
       </div>
     </div>
-
-	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/base/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+  <!--	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/base/jquery-ui.css" type="text/css" /> -->
   <!-- <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/base/jquery-ui.css" type="text/css" /> -->
   <!-- <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/base/jquery-ui.css" type="text/css" /> -->
   <!--  <script async src="https://www.google.com/jsapi"></script> -->
@@ -116,7 +148,8 @@
    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places"></script>
 	
 	<script defer src="js/jquery.address.js"></script>
-    <script defer src="js/bootstrap.min.js"></script>
+  <!--  <script defer src="js/bootstrap.min.js"></script> -->
+	<script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	
     
 	<script defer src="phonegap.js"></script>

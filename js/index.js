@@ -1,4 +1,47 @@
-
+var items_list = ['Find Products Next To You', 'Find Flavors Of India', 'Find Pani Puri...', 'Find Dosa...', 'Find Idli...'];
+var colors = ["ALICEBLUE", 'ANTIQUEWHITE',  'BLANCHEDALMOND', 'BEIGE', 'LIGHTSKYBLUE'];
+var items_var = 0;
+var colors_var = 0;
+var find_items = '';
+$(document).ready(function() {
+                        setupRotator();
+            });
+            function setupRotator() {
+                        if ($('.textItem').length > 1) {
+                                    //$('.textItem:first').addClass('current').fadeIn(10000);
+									//window.alert($('.textItem').first().attr());
+									find_items = items_list[items_var];
+									$('#text_search').attr("placeholder", find_items).addClass('current').fadeIn(10000);
+                                    setInterval('textRotate()', 10000);
+									items_var++;
+									colors_var++;
+                        }
+            }
+            function textRotate() {
+				
+                        var current = $('#text_search > .current');
+                /*
+				if (current.next().length == 0) {
+                                    current.removeClass('current').fadeOut(10000);
+                                    $('.textItem:first').addClass('current').fadeIn(10000);
+                        } else {
+                                    current.removeClass('current').fadeOut(10000);
+                                    current.next().addClass('current').fadeIn(10000);
+                        } */
+                        current.removeClass('current').fadeOut(10000);
+						//window.alert(items_list.length)
+						if (items_var == items_list.length) {
+							items_var = 0;
+						}
+						if (colors_var == colors.length) {
+							colors_var = 0;
+						}
+							
+							$('#text_search').attr("placeholder", items_list[items_var]).addClass('current').fadeIn(10000);
+							items_var++;
+							colors_var++;
+						
+            }
 function SwapDivsWithClick(div) {
 	d = document.getElementById(div);
 	d1 = document.getElementById('result_box');
@@ -84,6 +127,7 @@ function onDeviceReady() {
 
 	//myMap.reset();
 	myMap.findMe();
+	setupRotator();
 	//navigator.geolocation.getCurrentPosition(disp);
 }
 
