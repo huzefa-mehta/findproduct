@@ -64,6 +64,8 @@
 		});
 		var prevZoom = this.defaultZoom;
 		var zoomSearchInProgress = false;
+		var centerSearchInProgress = false;
+		var prevCenter = self.map.getCenter();
 
 		google.maps.event.addDomListener(self.map, 'zoom_changed', function () {
 			if (zoomSearchInProgress) {
@@ -77,6 +79,29 @@
 
 			zoomSearchInProgress = false;
 		});
+		google.maps.event.addDomListener(self.map, 'center_changed', function () {
+
+			//window.alert((Math.abs(prevCenter.lat() - self.map.getCenter().lat())*100/self.map.getCenter().lat()));
+			//window.alert((Math.abs(prevCenter.lng() - self.map.getCenter().lng())*100/self.map.getCenter().lng()));
+			if ((Math.abs((prevCenter.lat() - self.map.getCenter().lat()) * 100 / self.map.getCenter().lat()) < 0.05) ||
+				(Math.abs((prevCenter.lng() - self.map.getCenter().lng()) * 100 / self.map.getCenter().lng()) < 0.05)) {
+				return;
+			}
+
+			if (centerSearchInProgress) {
+				return;
+			}
+			prevCenter = self.map.getCenter()
+
+				centerSearchInProgress = true;
+
+			self.map.setCenter(self.map.getCenter());
+
+			self.drawSearchRadiusCircle(self.map.getCenter());
+			self.doSearch();
+
+			centerSearchInProgress = false;
+		});
 
 		self.searchrecords = null;
 
@@ -88,8 +113,8 @@
 		//-----custom initializers-----
 		$("#text_search").val("");
 
-		self.initAutoComplete(self.fusionTableId);
 		self.findMe();
+		self.initAutoComplete(self.fusionTableId);
 
 		var searchInProgress = false;
 		var prevText = '';
@@ -100,6 +125,7 @@
 		//run the default search when page loads
 		self.doSearch();
 		self.displayModSearchCount(0);
+
 		document.getElementById("results_list").style.display = "none";
 		if (options.callback)
 			options.callback(self);
@@ -133,9 +159,13 @@
 				"SELECT 'Product', COUNT() " +
 				'FROM ' + tableId + " GROUP BY 'Product'");
 
-		
 		var queryStr = [];
-		queryStr.push("SELECT 'Product', COUNT() FROM " + tableId + " GROUP BY 'Product'")
+		var geoConditionAutocomplete = '';
+		var searchR = 4 * self.searchRadius;
+		geoConditionAutocomplete = " WHERE ST_INTERSECTS(" + self.locationColumn + ", CIRCLE(LATLNG" + self.map.getCenter().toString() + "," + searchR + "))";
+		//window.alert(geoConditionAutocomplete);
+		//geoConditionAutocomplete = '';
+		queryStr.push("SELECT 'Product', COUNT() FROM " + tableId + geoConditionAutocomplete + " GROUP BY 'Product'")
 
 		var theurl = {
 			base : "https://www.googleapis.com/fusiontables/v2/query?sql=",
@@ -160,9 +190,7 @@
 			$('#text_search').autocomplete({
 				source : results,
 				minLength : 2,
-				//change: function(e, u) {
-				//textChange2();
-				//}
+
 			});
 
 		}).fail(function (response) {
@@ -201,7 +229,7 @@
 		else if (map.getZoom() == 16)
 			self.searchRadius = 375;
 	}
-	MapsLib.prototype.getgeoCondition = function (address, callback) {
+	MapsLib.prototype.getgeoConditionInit = function (address, callback) {
 		var self = this;
 		if (address !== "") {
 			if (address.toLowerCase().indexOf(self.locationScope) === -1) {
@@ -216,7 +244,7 @@
 					var map = self.map;
 
 					$.address.parameter('address', encodeURIComponent(address));
-					//$.address.parameter('radius', encodeURIComponent(self.searchRadius));
+
 					map.setCenter(self.currentPinpoint);
 
 					if (self.addrMarkerImage != '') {
@@ -243,6 +271,50 @@
 			callback('');
 		}
 	};
+	MapsLib.prototype.getgeoCondition = function (address, callback) {
+		var self = this;
+		if (address !== "") {
+			if (address.toLowerCase().indexOf(self.locationScope) === -1) {
+				//address = address + " " + self.locationScope;
+			}
+
+			self.geocoder.geocode({
+				'address' : address
+			}, function (results, status) {
+				if (status === google.maps.GeocoderStatus.OK) {
+					self.currentPinpoint = results[0].geometry.location;
+					var map = self.map;
+
+					$.address.parameter('address', encodeURIComponent(address));
+
+					map.setCenter(map.getCenter());
+					/*
+					if (self.addrMarkerImage != '') {
+					if (self.addrMarker) {
+					self.addrMarker.setMap(null);
+					}
+					self.addrMarker = new google.maps.Marker({
+					position : self.currentPinpoint,
+					map : self.map,
+					icon : self.addrMarkerImage,
+					//animation : google.maps.Animation.DROP,
+					title : address
+					});
+					}*/
+					//var geoCondition = " AND ST_INTERSECTS(" + self.locationColumn + ", CIRCLE(LATLNG" + self.currentPinpoint.toString() + "," + self.searchRadius + "))";
+
+					var geoCondition = " AND ST_INTERSECTS(" + self.locationColumn + ", CIRCLE(LATLNG" + self.map.getCenter().toString() + "," + self.searchRadius + "))";
+					callback(geoCondition);
+					self.drawSearchRadiusCircle(map.getCenter());
+				} else {
+					alert("We could not find your address: " + status);
+					callback('');
+				}
+			});
+		} else {
+			callback('');
+		}
+	};
 	var searchInProgress = false;
 	MapsLib.prototype.doSearch = function () {
 		var self = this;
@@ -260,7 +332,7 @@
 
 		searchInProgress = true;
 		self.clearSearchResultsOnly();
-		//self.displayModSearchCount(0);
+
 		var address = $("#search_address").val();
 		var analytic_address_product = text_search + " from " + address;
 		ga('send', 'event', 'search', 'product_from_address', analytic_address_product);
@@ -443,7 +515,7 @@
 				}
 			} else {
 				if ($("#text_search").val() != '') {
-					$("#result_count").html(self.addCommas(numRows) + " " + name + " found<br><small>(Zoom out to search more stores)</small>");
+					$("#result_count").html(self.addCommas(numRows) + " " + name + " found<br><small>(Zoom out or pan to search more stores)</small>");
 				} else {
 					$("#result_count").html(self.addCommas(numRows) + " " + name + " found");
 				}
@@ -570,7 +642,7 @@
 					var Duration = '';
 					var template = '';
 					template = "<small><table border='\"1\" style=\"width:100%\"'>\
-																																																																																																														<strong><th>Store<br><small>(Click store link for details)</small></th><th>Product</th><th>Price</th><th>Dist/Time</th>";
+																																																																																																																				<strong><th>Store<br><small>(Click store link for details)</small></th><th>Product</th><th>Price</th><th>Dist/Time</th>";
 					for (var row in myStoreArray) {
 
 						Distance = distances[Count];
@@ -607,9 +679,9 @@
 						}
 
 						template = template.concat("<tr><td>" + myStoreArray[row][8] + "<br><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + productStr + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
-																																																																																																																							<td>" + Product + "</td><td>" + Price + "</td>\
-																																																																																																																							<td>" + Distance + "/" + Duration + "</td>\
-																																																																																																																							</tr>");
+																																																																																																																															<td>" + Product + "</td><td>" + Price + "</td>\
+																																																																																																																															<td>" + Distance + "/" + Duration + "</td>\
+																																																																																																																															</tr>");
 						Count = Count + 1;
 
 					}
@@ -705,7 +777,7 @@
 					jQuery('#myposition').remove();
 				}, 3000);
 				setTimeout(function () {
-					self.getgeoCondition($('#search_address').val(), function (geoCondition) {});
+					self.getgeoConditionInit($('#search_address').val(), function (geoCondition) {});
 					ga('send', 'event', 'link', 'address', $('#search_address').val());
 					self.doSearch();
 				}, 1000);

@@ -174,7 +174,8 @@ $(function () {
 		ga('send', 'event', 'link', 'address', $('#search_address').val());
 
 		var search_address = $("#search_address").val();
-		myMap.getgeoCondition(search_address, function () {});
+		myMap.getgeoConditionInit(search_address, function () {});
+		
 		$("#text_search").val("");
 		myMap.clearSearchResultsOnly();
 		myMap.displayModSearchCount(0);
