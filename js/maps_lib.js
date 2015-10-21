@@ -117,7 +117,18 @@
 		//-----custom initializers-----
 		$("#text_search").val("");
 
-		self.findMe();
+		var search_address = querySt("search_address");
+		var text_search = querySt("text_search");
+		
+		if ((text_search != '') && (text_search !== undefined)) {
+			$("#text_search").val(text_search);
+		}
+		if ((search_address != '') && (search_address !== undefined)) {
+			$("#search_address").val(search_address);
+			self.getgeoConditionInit(search_address, function () {});
+		} else {
+			self.findMe();
+		}
 		self.initAutoComplete(self.fusionTableId);
 
 		var searchInProgress = false;
@@ -239,6 +250,7 @@
 			if (address.toLowerCase().indexOf(self.locationScope) === -1) {
 				//address = address + " " + self.locationScope;
 			}
+			
 
 			self.geocoder.geocode({
 				'address' : address
@@ -646,7 +658,7 @@
 					var Duration = '';
 					var template = '';
 					template = "<small><table border='\"1\" style=\"width:100%\"'>\
-																																																																																																																																						<strong><th>Store<br><small>(Click store link for details)</small></th><th>Product</th><th>Price</th><th>Dist/Time</th>";
+																																																																																																																																												<strong><th>Store<br><small>(Click store link for details)</small></th><th>Product</th><th>Price</th><th>Dist/Time</th>";
 					for (var row in myStoreArray) {
 
 						Distance = distances[Count];
@@ -683,9 +695,9 @@
 						}
 
 						template = template.concat("<tr><td>" + myStoreArray[row][8] + "<br><strong><a href='javascript:centerOn(\"" + myStoreArray[row][3] + "\",\"" + myStoreArray[row][0] + "\",\"" + productStr + "\",\"" + Price + "\",\"" + myStoreArray[row][6] + "\",\"" + myStoreArray[row][7] + "\",\"" + myStoreArray[row][8] + "\",\"" + myStoreArray[row][9] + "\")'>" + myStoreArray[row][0] + "</a></strong></td>\
-																																																																																																																																																							<td>" + Product + "</td><td>" + Price + "</td>\
-																																																																																																																																																							<td>" + Distance + "/" + Duration + "</td>\
-																																																																																																																																																							</tr>");
+																																																																																																																																																															<td>" + Product + "</td><td>" + Price + "</td>\
+																																																																																																																																																															<td>" + Distance + "/" + Duration + "</td>\
+																																																																																																																																																															</tr>");
 						Count = Count + 1;
 
 					}
