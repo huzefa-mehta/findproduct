@@ -34,6 +34,13 @@
               <icon src="images/icons/ios/Icon-72@2x.png" width="144" height="144" />
 
      </platform>
+	 
+	 <platform name="ios">
+    <!-- images are determined by width and height. The following are supported -->
+    <splash src="images/splash/ios/Default-Portrait.png" width="320" height="480"/>
+	<splash src="images/splash/ios/Default-Portrait@2x.png" width="640" height="960"/>
+    
+</platform>
 
 <preference name="target-device" value="handset" />
 <gap:plugin name="org.apache.cordova.geolocation" />
