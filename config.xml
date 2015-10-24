@@ -1,7 +1,7 @@
 <widget xmlns     = "http://www.w3.org/ns/widgets"
         xmlns:gap = "http://phonegap.com/ns/1.0"
         id        = "www.findproduct.us"
-        version   = "0.0.8">
+        version   = "0.0.9">
 
     <name>Find Product</name>
 	
@@ -37,6 +37,7 @@
 	 
 	 <platform name="ios">
     <!-- images are determined by width and height. The following are supported -->
+	<splash src="images/splash/ios/Default-Portrait.png" />
     <splash src="images/splash/ios/Default-Portrait.png" width="320" height="480"/>
 	<splash src="images/splash/ios/Default-Portrait@2x.png" width="640" height="960"/>
 <splash src="images/splash/ios/Default-568h@2x.png" width="640" height="1136"/>    
