@@ -39,7 +39,9 @@
     <!-- images are determined by width and height. The following are supported -->
     <splash src="images/splash/ios/Default-Portrait.png" width="320" height="480"/>
 	<splash src="images/splash/ios/Default-Portrait@2x.png" width="640" height="960"/>
-    
+<splash src="images/splash/ios/Default-568h@2x.png" width="640" height="1136"/>    
+<splash src="images/splash/ios/Default-Portrait-736h@3x.png" width="768" height="1024"/>
+<splash src="images/splash/ios/Default-Landscape-736h@3x.png" width="1024" height="768" />
 </platform>
 
 <preference name="target-device" value="handset" />
