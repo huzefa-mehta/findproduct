@@ -5,6 +5,7 @@ var colors_var = 0;
 var find_items = '';
 $(document).ready(function () {
 	setupRotator();
+	document.addEventListener('deviceready', onDeviceReady, false);
 });
 function setupRotator() {
 	if ($('.textItem').length > 1) {
@@ -132,8 +133,11 @@ function geocodeAddress(geocoder, map, address, store, product, price, phone, we
 		}
 	});
 }
+function onLoad() {
+    document.addEventListener("deviceready", onDeviceReady, false);
+}
 
-document.addEventListener('deviceready', onDeviceReady, false);
+//document.addEventListener('deviceready', onDeviceReady, false);
 
 function onDeviceReady() {
 
