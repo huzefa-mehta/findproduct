@@ -645,8 +645,9 @@
 					var destinationList = response.destinationAddresses;
 
 					var resultsx = response.rows[0];
+					var maxDest = max(25, destinationList.length);
 
-					for (var j = 0; j < destinationList.length; j++) {
+					for (var j = 0; j < maxDest; j++) {
 						distances.push(resultsx.elements[j].distance.text);
 						durations.push(resultsx.elements[j].duration.text);
 

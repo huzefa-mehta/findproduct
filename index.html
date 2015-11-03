@@ -54,6 +54,11 @@
       ga('send', 'pageview'); 
 
 	</script>
+	<script> 
+	function onLoad() {
+    document.addEventListener("deviceready", onDeviceReady, false);
+    }
+	</script>
   </head>
   <body onload="onLoad()">
     <div class='navbar navbar-default navbar-static-top'>
