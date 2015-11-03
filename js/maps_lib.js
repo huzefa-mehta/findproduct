@@ -620,8 +620,11 @@
 			var origins = new Array;
 			var distances = [];
 			var durations = new Array;
+			var numDest = 0;
 			for (var row in myStoreArray) {
 				destinations.push(myStoreArray[row][3]);
+				numDest++;
+				if (numDest == 24) {break;}
 			}
 			if ($("#search_address").val() != "") {
 				origins.push($("#search_address").val());
@@ -645,11 +648,16 @@
 					var destinationList = response.destinationAddresses;
 
 					var resultsx = response.rows[0];
-					var maxDest = max(25, destinationList.length);
+					//var maxDest = Math.min(25, destinationList.length);
+					//window.alert(destinationList.length)
+					
+				
 
-					for (var j = 0; j < maxDest; j++) {
+					for (var j = 0; j < destinationList.length; j++) {
+						if ((resultsx.elements[j] != null) && (resultsx.elements[j].distance != null) && (resultsx.elements[j].duration != null)) {
 						distances.push(resultsx.elements[j].distance.text);
 						durations.push(resultsx.elements[j].duration.text);
+						}
 
 					}
 					var Price = '';
