@@ -142,7 +142,7 @@ function geocodeAddress(geocoder, map, address, store, product, price, phone, we
 function onDeviceReady() {
 
 	//myMap.reset();
-	myMap.findMe();
+	//myMap.findMe();
 	setupRotator();
 	//navigator.geolocation.getCurrentPosition(disp);
 }
