@@ -14,7 +14,7 @@
     </author>
 
 <!-- <icon src="images/FindProductIcon.png" />  -->
-<icon src="icon.png" gap:role="default" />
+<icon src="images/icons/ios/Icon.png" gap:role="default" />
 
  <platform name="ios">
               <!-- iOS 8.0+ -->
