@@ -138,7 +138,15 @@ function geocodeAddress(geocoder, map, address, store, product, price, phone, we
 //}
 
 //document.addEventListener('deviceready', onDeviceReady, false);
+function onSuccess(position) {
+  // your callback here 
+  setupRotator();
+}
 
+function onError(error) { 
+  // your callback here
+}
+/*
 function onDeviceReady() {
 
 	//myMap.reset();
@@ -146,6 +154,7 @@ function onDeviceReady() {
 	setupRotator();
 	//navigator.geolocation.getCurrentPosition(disp);
 }
+*/
 
 //google.load('visualization', '1');
 //<![CDATA[

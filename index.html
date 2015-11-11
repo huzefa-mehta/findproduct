@@ -57,6 +57,9 @@
 		<script src="phonegap.js"></script>
 	<script src="cordova.js"></script>
 	<script> 
+	function onDeviceReady() {
+  navigator.geolocation.getCurrentPosition(onSuccess, onError);     
+}
 	
 	function onLoad() {
     document.addEventListener("deviceready", onDeviceReady, false);
