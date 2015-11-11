@@ -54,8 +54,10 @@
       ga('send', 'pageview'); 
 
 	</script>
-		<script src="phonegap.js"></script>
-	<script src="cordova.js"></script>
+	<script defer src="cordova.js"></script>
+
+	<!-- <script defer src="phonegap.js"></script> -->
+
 	<script> 
 	function onDeviceReady() {
   navigator.geolocation.getCurrentPosition(onSuccess, onError);     
