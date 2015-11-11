@@ -141,6 +141,7 @@ function geocodeAddress(geocoder, map, address, store, product, price, phone, we
 function onSuccess(position) {
   // your callback here 
   setupRotator();
+  myMap.findMe();
 }
 
 function onError(error) { 
