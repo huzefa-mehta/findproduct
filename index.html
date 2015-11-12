@@ -59,13 +59,14 @@
 	<!-- <script src="phonegap.js"></script> -->
 
 	<script> 
+	
+	
+	function onLoad() {
+    document.addEventListener("deviceready", onDeviceReady, false);
 	function onDeviceReady() {
 	myMap.findMe();
   //navigator.geolocation.getCurrentPosition(onSuccess, onError);     
 }
-	
-	function onLoad() {
-    document.addEventListener("deviceready", onDeviceReady, false);
     }
 	onLoad();
 	</script>
