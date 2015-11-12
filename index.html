@@ -61,8 +61,8 @@
 	<script> 
 	
 	function onDeviceReady() {
-	myMap.findMe();
-  //navigator.geolocation.getCurrentPosition(onSuccess, onError);     
+	//myMap.findMe();
+    navigator.geolocation.getCurrentPosition(onSuccess, onError);     
 }
 	function onLoad() {
     document.addEventListener("deviceready", onDeviceReady, false);
