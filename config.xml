@@ -46,7 +46,7 @@
 <!-- </platform> -->
 
 <preference name="target-device" value="handset" />
- <gap:plugin name="org.apache.cordova.geolocation"/>
+<!-- <gap:plugin name="org.apache.cordova.geolocation"/> -->
 <gap:plugin name="cordova-plugin-geolocation" source="npm"/>
 <!-- <gap:plugin name="org.apache.cordova.device" /> -->
 <preference name="permissions" value="none"/>
