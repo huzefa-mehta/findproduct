@@ -3,10 +3,10 @@ var colors = ["ALICEBLUE", 'ANTIQUEWHITE', 'BLANCHEDALMOND', 'BEIGE', 'LIGHTSKYB
 var items_var = 0;
 var colors_var = 0;
 var find_items = '';
-//$(document).ready(function () {
+$(document).ready(function () {
 	//setupRotator();
-	//document.addEventListener('deviceready', onDeviceReady, false);
-//});
+	document.addEventListener('deviceready', onDeviceReady, false);
+});
 function setupRotator() {
 	if ($('.textItem').length > 1) {
 		//$('.textItem:first').addClass('current').fadeIn(10000);
