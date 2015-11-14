@@ -54,19 +54,25 @@
       ga('send', 'pageview'); 
 
 	</script>
-	<script type="text/javascript" charset="utf-8" src="cordova.js"></script> 
+	<script defer type="text/javascript" charset="utf-8" src="cordova.js"></script> 
 	<!-- <script src="cordova.js"></script> -->
 
-    <script src="phonegap.js"></script>
+    //<script defer src="phonegap.js"></script>
 
 	<script> 
 	
 	function onDeviceReady() {
+	//window.alert('ere')
 	//myMap.findMe();
     navigator.geolocation.getCurrentPosition(onSuccess, onError);     
 }
 	function onLoad() {
-    document.addEventListener("deviceready", onDeviceReady, false);
+	if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/)) {
+        document.addEventListener("deviceready", onSuccess, false);
+    } else {
+        onSuccess();
+    }
+    //document.addEventListener("deviceready", onDeviceReady, false);
 	
     }
 	//onLoad();

@@ -138,11 +138,11 @@ function geocodeAddress(geocoder, map, address, store, product, price, phone, we
 //}
 
 //document.addEventListener('deviceready', onDeviceReady, false);
-function onSuccess(position) {
+//function onSuccess(position) {
   // your callback here 
-  setupRotator();
-  myMap.findMe();
-}
+  //setupRotator();
+  //myMap.findMe();
+//}
 
 function onError(error) { 
   // your callback here
@@ -165,7 +165,7 @@ $(window).resize(function () {
 
 	$('#map_canvas').css('height', (h - offsetTop));
 }).resize();
-
+/*
 $(function () {
 	var myMap = new MapsLib({
 			fusionTableId : "1O6tQoCnle-2SrXQwRFUXoMQBmcRKroipZOCmDpjx",
@@ -314,4 +314,5 @@ $(function () {
 		}
 	});
 });
+*/
 //]]>

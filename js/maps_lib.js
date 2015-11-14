@@ -1,3 +1,4 @@
+function onSuccess (position) {
 (function (window, undefined) {
 	var MapsLib = function (options) {
 		var self = this;
@@ -818,6 +819,7 @@
 			alert("Geolocation API is not supported in your browser.");
 		}
 	};
+	
 
 	if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 		module.exports = MapsLib;
@@ -830,3 +832,155 @@
 	}
 
 })(window);
+
+$(function () {
+	var myMap = new MapsLib({
+			fusionTableId : "1O6tQoCnle-2SrXQwRFUXoMQBmcRKroipZOCmDpjx",
+			//"1m4Ez9xyTGfY2CU6O-UgEcPzlS0rnzLU93e4Faa0",
+			googleApiKey : "AIzaSyAME1K5S2fqX8_Sjk6HsREPMCucUzeejy8",
+			//"AIzaSyCFaB9oZ9ZNM9i99yUyOsaxcoBpYS_UqHo",//
+			//"AIzaSyAyLaLgGUf3v6zduHNZ-4mGcg3d_Ix9rO0",//with url access
+			//"AIzaSyA3FQFrNr5W2OEVmuENqhb2MBB2JabdaOY",
+			locationColumn : "Location",
+			map_center : [37.23571221595085, -122.02900131296383],
+			//map_center:         [41.8781136, -87.66677856445312],
+			locationScope : "san jose"
+		});
+
+	var autocomplete = new google.maps.places.Autocomplete(document.getElementById('search_address'));
+
+	$('#search').click(function () {
+
+		textChange();
+	});
+	var inAddrChange = false;
+	var prevAddr = '';
+	function addrChange() {
+		if (inAddrChange) {
+			return;
+		}
+		if (prevAddr == $('#search_address').val()) {
+			return;
+		}
+		inAddrChange = true;
+		clearTimeout(addrChange.timeout);
+		ga('send', 'event', 'link', 'address', $('#search_address').val());
+
+		var search_address = $("#search_address").val();
+		myMap.getgeoConditionInit(search_address, function () {});
+
+		$("#text_search").val("");
+		myMap.clearSearchResultsOnly();
+		myMap.displayModSearchCount(0);
+		//myMap.doSearch();
+		inAddrChange = false;
+	}
+	$('#search_address').on('autocompleteselect', function () {
+		addrChange();
+	});
+	$('#search_address').on('click change blur', function () {
+		setTimeout(function () {
+			addrChange();
+		}, 500);
+	});
+
+	//$('#search_address').on('blur, change', function () {
+	//setTimeout(function () {
+	//addrChange();
+	//}, 500);
+	//});
+	$('#search_address').on('autocompletefocus', function (event, ui) {
+		$('#search_address').val(ui.item.value);
+
+		event.preventDefault();
+	});
+	$("#search_address").on('keydown', function (e) {
+		var key = e.keyCode ? e.keyCode : e.which;
+		if (key == 13) {
+			addrChange();
+		}
+	});
+	var inTextChange = false;
+	var prevText = '';
+	function textChange() {
+		if (inTextChange) {
+			return;
+		}
+		if (prevText == $('#text_search').val()) {
+			return;
+		}
+		prevText = $('#text_search').val();
+		inTextChange = true;
+		clearTimeout(textChange.timeout);
+		//ga('send', 'event', 'link', 'search', $('#text_search').val());
+		myMap.doSearch();
+		$('#text_search').autocomplete('close');
+		inTextChange = false;
+	}
+
+	$('#text_search').on('click change blur', function () {
+		setTimeout(function () {
+			textChange();
+		}, 500);
+	});
+
+	//$('#text_search').textinput('create', function() {
+	// textChange();
+	//});
+
+	//$('#text_search').on('blur, change', function () {
+	//setTimeout(function () {
+	//textChange();
+	//}, 500);
+	//});
+
+	$('#text_search').on('autocompletefocus', function (event, ui) {
+		$('#text_search').val(ui.item.value);
+
+		event.preventDefault();
+	});
+	$('#text_search').on('autocompleteselect', function () {
+		textChange();
+	});
+	$("#text_search").on('keydown', function (e) {
+		var key = e.keyCode ? e.keyCode : e.which;
+		if (key == 13) {
+			textChange();
+		}
+		if ((key === 46) || (key == 8)) {
+			var text_search = $("#text_search").val().replace("'", "\\'");
+			if (text_search.length == 1) {
+				myMap.clearSearchResultsOnly();
+				myMap.displayModSearchCount(0);
+				prevText = '';
+			} else {
+				return;
+			}
+		} else {
+			return;
+		}
+	});
+
+	$('#find_me').click(function () {
+
+		myMap.findMe();
+		ga('send', 'event', 'link', 'findme', $('#search_address').val());
+		return false;
+	});
+
+	$('#reset').click(function () {
+		myMap.reset();
+		return false;
+	});
+
+	$(":text").keydown(function (e) {
+		var key = e.keyCode ? e.keyCode : e.which;
+		if (key === 13) {
+			$('#search').click();
+			return false;
+		}
+	});
+});
+
+};
+
